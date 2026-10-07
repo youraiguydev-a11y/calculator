@@ -1,264 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator</title>
+from flask import Flask, render_template, request, jsonify
+from openai import OpenAI
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+app = Flask(__name__)
 
-        html, body {
-            margin: 0;
-            width: 100%;
-            min-height: 100%;
-        }
+client = OpenAI()
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #111;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            overflow-x: hidden;
-        }
 
-        .calculator {
-            width: 100%;
-            max-width: 340px;
-            background: #1c1c1c;
-            padding: 20px;
-            border-radius: 28px;
-        }
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-        #display {
-            width: 100%;
-            height: 100px;
-            background: #1c1c1c;
-            color: white;
-            border: none;
-            outline: none;
-            font-size: clamp(32px, 8vw, 42px);
-            text-align: right;
-            padding: 20px 10px;
-            margin-bottom: 15px;
-        }
 
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
+@app.route("/ask-ai", methods=["POST"])
+def ask_ai():
+    data = request.get_json()
+    question = data.get("question", "").strip()
 
-        button {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            border: none;
-            border-radius: 50%;
-            background: #333;
-            color: white;
-            font-size: clamp(18px, 5vw, 25px);
-            cursor: pointer;
-        }
+    if not question:
+        return jsonify({"error": "Please enter a question"}), 400
 
-        button:hover {
-            background: #444;
-        }
+    try:
+        response = client.responses.create(
+            model="gpt-6-luna",
+            instructions=(
+                "You are a concise math assistant. "
+                "Solve the user's math question accurately. "
+                "Give the final answer first, then a very short explanation."
+            ),
+            input=question
+        )
 
-        .operator,
-        .equal {
-            background: #ff9500;
-        }
+        return jsonify({
+            "answer": response.output_text
+        })
 
-        .operator:hover,
-        .equal:hover {
-            background: #e88900;
-        }
+    except Exception as error:
+        return jsonify({
+            "error": "AI request failed"
+        }), 500
 
-        .special {
-            background: #a5a5a5;
-            color: black;
-        }
 
-        .zero {
-            grid-column: span 2;
-            aspect-ratio: auto;
-            border-radius: 35px;
-            text-align: left;
-            padding-left: 27px;
-        }
-
-        @media (max-width: 420px) {
-            body {
-                padding: 12px;
-            }
-
-            .calculator {
-                max-width: 320px;
-                padding: 16px;
-                border-radius: 24px;
-            }
-
-            #display {
-                height: 90px;
-                margin-bottom: 12px;
-            }
-
-            .buttons {
-                gap: 9px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="calculator">
-
-    <input
-        type="text"
-        id="display"
-        value=""
-        readonly
-    >
-
-    <div class="buttons">
-
-        <button class="special" onclick="clearDisplay()">C</button>
-        <button class="special" onclick="deleteNumber()">⌫</button>
-        <button class="operator" onclick="addOperator('/')">÷</button>
-        <button class="operator" onclick="addOperator('*')">×</button>
-
-        <button onclick="addNumber('7')">7</button>
-        <button onclick="addNumber('8')">8</button>
-        <button onclick="addNumber('9')">9</button>
-        <button class="operator" onclick="addOperator('-')">−</button>
-
-        <button onclick="addNumber('4')">4</button>
-        <button onclick="addNumber('5')">5</button>
-        <button onclick="addNumber('6')">6</button>
-        <button class="operator" onclick="addOperator('+')">+</button>
-
-        <button onclick="addNumber('1')">1</button>
-        <button onclick="addNumber('2')">2</button>
-        <button onclick="addNumber('3')">3</button>
-
-        <button class="zero" onclick="addNumber('0')">0</button>
-
-        <button class="equal" onclick="calculate()">=</button>
-
-    </div>
-
-</div>
-
-<script>
-
-    let expression = "";
-    let justCalculated = false;
-
-    const display = document.getElementById("display");
-
-    function updateDisplay() {
-        display.value = expression
-            .replace(/\*/g, "×")
-            .replace(/\//g, "÷");
-    }
-
-    function addNumber(number) {
-
-        if (justCalculated) {
-            expression = "";
-            justCalculated = false;
-        }
-
-        expression += number;
-        updateDisplay();
-    }
-
-    function addOperator(operator) {
-
-        if (expression === "") {
-            return;
-        }
-
-        justCalculated = false;
-
-        const lastCharacter = expression.slice(-1);
-
-        if ("+-*/".includes(lastCharacter)) {
-            expression = expression.slice(0, -1) + operator;
-        } else {
-            expression += operator;
-        }
-
-        updateDisplay();
-    }
-
-    function clearDisplay() {
-        expression = "";
-        justCalculated = false;
-        display.value = "";
-    }
-
-    function deleteNumber() {
-
-        if (justCalculated) {
-            clearDisplay();
-            return;
-        }
-
-        expression = expression.slice(0, -1);
-        updateDisplay();
-    }
-
-    function calculate() {
-
-        if (expression === "") {
-            return;
-        }
-
-        const lastCharacter = expression.slice(-1);
-
-        if ("+-*/".includes(lastCharacter)) {
-            return;
-        }
-
-        try {
-
-            if (!/^[0-9+\-*/. ]+$/.test(expression)) {
-                throw new Error("Invalid expression");
-            }
-
-            let result = Function(
-                '"use strict"; return (' + expression + ')'
-            )();
-
-            if (!Number.isFinite(result)) {
-                display.value = "Error";
-                expression = "";
-                return;
-            }
-
-            result = Math.round((result + Number.EPSILON) * 10000000000)
-                     / 10000000000;
-
-            expression = result.toString();
-
-            display.value = expression;
-
-            justCalculated = true;
-
-        } catch (error) {
-            display.value = "Error";
-            expression = "";
-            justCalculated = false;
-        }
-    }
-
-</script>
-
-</body>
-</html>
+if __name__ == "__main__":
+    app.run(debug=True)
