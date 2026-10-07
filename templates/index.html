@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculator</title>
 
     <style>
@@ -8,18 +9,26 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
             margin: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             background: #111;
             font-family: Arial, sans-serif;
+            padding: 20px;
+            overflow-x: hidden;
         }
 
         .calculator {
-            width: 340px;
+            width: 100%;
+            max-width: 340px;
             background: #1c1c1c;
             padding: 20px;
             border-radius: 28px;
@@ -32,10 +41,11 @@
             color: white;
             border: none;
             outline: none;
-            font-size: 42px;
+            font-size: clamp(32px, 8vw, 42px);
             text-align: right;
             padding: 20px 10px;
             margin-bottom: 15px;
+            overflow: hidden;
         }
 
         .buttons {
@@ -45,24 +55,28 @@
         }
 
         button {
-            height: 65px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
             border: none;
             border-radius: 50%;
             background: #333;
             color: white;
-            font-size: 25px;
+            font-size: clamp(18px, 5vw, 25px);
             cursor: pointer;
+            transition: background 0.15s ease;
         }
 
         button:hover {
             background: #444;
         }
 
-        .operator {
+        .operator,
+        .equal {
             background: #ff9500;
         }
 
-        .operator:hover {
+        .operator:hover,
+        .equal:hover {
             background: #e88900;
         }
 
@@ -73,13 +87,51 @@
 
         .zero {
             grid-column: span 2;
+            aspect-ratio: auto;
             border-radius: 35px;
             text-align: left;
             padding-left: 27px;
         }
 
-        .equal {
-            background: #ff9500;
+        @media (max-width: 420px) {
+            body {
+                padding: 12px;
+                align-items: center;
+            }
+
+            .calculator {
+                max-width: 320px;
+                padding: 16px;
+                border-radius: 24px;
+            }
+
+            #display {
+                height: 90px;
+                margin-bottom: 12px;
+                padding: 15px 8px;
+            }
+
+            .buttons {
+                gap: 9px;
+            }
+
+            .zero {
+                padding-left: 22px;
+            }
+        }
+
+        @media (max-width: 340px) {
+            .calculator {
+                padding: 12px;
+            }
+
+            .buttons {
+                gap: 7px;
+            }
+
+            #display {
+                height: 80px;
+            }
         }
     </style>
 </head>
@@ -88,13 +140,13 @@
 
 <div class="calculator">
 
-    <form method="POST">
+    <form method="POST" id="calculatorForm">
 
         <input
             type="text"
             id="display"
             name="display"
-            value="{{ result }}"
+            value="{{ result if result is not none else '' }}"
             readonly
         >
 
@@ -138,9 +190,11 @@
     let operator = "";
     let currentNumber = "";
 
+    const display = document.getElementById("display");
+
     function addNumber(number) {
         currentNumber += number;
-        document.getElementById("display").value = currentNumber;
+        display.value = currentNumber;
     }
 
     function setOperator(op) {
@@ -152,26 +206,22 @@
         operator = op;
         currentNumber = "";
 
-        document.getElementById("display").value =
-            firstNumber + " " + op;
+        display.value = firstNumber + " " + op;
     }
 
     function clearDisplay() {
         firstNumber = "";
         operator = "";
         currentNumber = "";
-
-        document.getElementById("display").value = "";
+        display.value = "";
     }
 
     function deleteNumber() {
         currentNumber = currentNumber.slice(0, -1);
-
-        document.getElementById("display").value = currentNumber;
+        display.value = currentNumber;
     }
 
     function prepareCalculation() {
-
         if (
             firstNumber === "" ||
             currentNumber === "" ||
@@ -184,7 +234,7 @@
         document.getElementById("num2").value = currentNumber;
         document.getElementById("choice").value = operator;
 
-        document.querySelector("form").submit();
+        document.getElementById("calculatorForm").submit();
     }
 </script>
 
