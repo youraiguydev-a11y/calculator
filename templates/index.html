@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator</title>
+    <title>AI Calculator</title>
 
     <style>
         * {
@@ -17,12 +17,17 @@
             align-items: center;
             background: #111;
             font-family: Arial, sans-serif;
-            padding: 15px;
+            padding: 20px;
+            color: white;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 360px;
         }
 
         .calculator {
             width: 100%;
-            max-width: 340px;
             background: #1c1c1c;
             padding: 20px;
             border-radius: 28px;
@@ -47,7 +52,7 @@
             gap: 12px;
         }
 
-        button {
+        .calc-button {
             width: 100%;
             aspect-ratio: 1;
             border: none;
@@ -76,9 +81,71 @@
             padding-left: 28px;
         }
 
+        .ai-section {
+            margin-top: 18px;
+            width: 100%;
+            background: #1c1c1c;
+            padding: 18px;
+            border-radius: 20px;
+        }
+
+        .ai-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        #aiQuestion {
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 13px;
+            border-radius: 10px;
+            background: #333;
+            color: white;
+            font-size: 16px;
+        }
+
+        #aiQuestion::placeholder {
+            color: #aaa;
+        }
+
+        #askButton {
+            width: 100%;
+            border: none;
+            margin-top: 10px;
+            padding: 13px;
+            border-radius: 10px;
+            background: #ff9500;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #askButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #aiAnswer {
+            margin-top: 14px;
+            line-height: 1.5;
+            color: #eee;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
         @media (max-width: 400px) {
+            body {
+                padding: 12px;
+            }
+
+            .wrapper {
+                max-width: 320px;
+            }
+
             .calculator {
-                max-width: 310px;
                 padding: 15px;
             }
 
@@ -91,7 +158,7 @@
                 font-size: 36px;
             }
 
-            button {
+            .calc-button {
                 font-size: 21px;
             }
         }
@@ -100,39 +167,63 @@
 
 <body>
 
-<div class="calculator" id="calculator">
+<div class="wrapper">
 
-    <input type="text" id="display" readonly value="0">
+    <div class="calculator">
 
-    <div class="buttons">
+        <input type="text" id="display" readonly value="0">
 
-        <button class="special" onclick="clearCalculator()">AC</button>
-        <button class="special" onclick="toggleSign()">+/-</button>
-        <button class="special" onclick="percentage()">%</button>
-        <button class="operator" onclick="addOperator('/')">÷</button>
+        <div class="buttons">
 
-        <button onclick="addNumber('7')">7</button>
-        <button onclick="addNumber('8')">8</button>
-        <button onclick="addNumber('9')">9</button>
-        <button class="operator" onclick="addOperator('*')">×</button>
+            <button class="calc-button special" onclick="clearCalculator()">AC</button>
+            <button class="calc-button special" onclick="toggleSign()">+/-</button>
+            <button class="calc-button special" onclick="percentage()">%</button>
+            <button class="calc-button operator" onclick="addOperator('/')">÷</button>
 
-        <button onclick="addNumber('4')">4</button>
-        <button onclick="addNumber('5')">5</button>
-        <button onclick="addNumber('6')">6</button>
-        <button class="operator" onclick="addOperator('-')">−</button>
+            <button class="calc-button" onclick="addNumber('7')">7</button>
+            <button class="calc-button" onclick="addNumber('8')">8</button>
+            <button class="calc-button" onclick="addNumber('9')">9</button>
+            <button class="calc-button operator" onclick="addOperator('*')">×</button>
 
-        <button onclick="addNumber('1')">1</button>
-        <button onclick="addNumber('2')">2</button>
-        <button onclick="addNumber('3')">3</button>
-        <button class="operator" onclick="addOperator('+')">+</button>
+            <button class="calc-button" onclick="addNumber('4')">4</button>
+            <button class="calc-button" onclick="addNumber('5')">5</button>
+            <button class="calc-button" onclick="addNumber('6')">6</button>
+            <button class="calc-button operator" onclick="addOperator('-')">−</button>
 
-        <button class="zero" onclick="addNumber('0')">0</button>
-        <button onclick="addDecimal()">.</button>
-        <button class="equal" onclick="calculate()">=</button>
+            <button class="calc-button" onclick="addNumber('1')">1</button>
+            <button class="calc-button" onclick="addNumber('2')">2</button>
+            <button class="calc-button" onclick="addNumber('3')">3</button>
+            <button class="calc-button operator" onclick="addOperator('+')">+</button>
+
+            <button class="calc-button zero" onclick="addNumber('0')">0</button>
+            <button class="calc-button" onclick="addDecimal()">.</button>
+            <button class="calc-button equal" onclick="calculate()">=</button>
+
+        </div>
+
+    </div>
+
+
+    <div class="ai-section">
+
+        <div class="ai-title">Ask AI</div>
+
+        <input
+            type="text"
+            id="aiQuestion"
+            placeholder="Ask a math question..."
+        >
+
+        <button id="askButton" onclick="askAI()">
+            Ask AI
+        </button>
+
+        <div id="aiAnswer"></div>
 
     </div>
 
 </div>
+
 
 <script>
     let expression = "";
@@ -140,9 +231,12 @@
 
     const display = document.getElementById("display");
 
+
     function updateDisplay() {
+
         if (expression === "") {
             display.value = "0";
+            resizeDisplay();
             return;
         }
 
@@ -153,34 +247,45 @@
         resizeDisplay();
     }
 
+
     function resizeDisplay() {
+
         const length = display.value.length;
 
         if (length > 16) {
             display.style.fontSize = "24px";
-        } else if (length > 11) {
+        }
+        else if (length > 11) {
             display.style.fontSize = "30px";
-        } else {
+        }
+        else {
             display.style.fontSize = "";
         }
     }
 
+
     function addNumber(number) {
+
         if (justCalculated) {
             expression = "";
             justCalculated = false;
         }
 
         expression += number;
+
         updateDisplay();
     }
 
+
     function addOperator(operator) {
+
         if (expression === "") {
+
             if (operator === "-") {
                 expression = "-";
                 updateDisplay();
             }
+
             return;
         }
 
@@ -189,21 +294,26 @@
         const lastCharacter = expression.slice(-1);
 
         if ("+-*/".includes(lastCharacter)) {
-            expression = expression.slice(0, -1) + operator;
-        } else {
+            expression =
+                expression.slice(0, -1) + operator;
+        }
+        else {
             expression += operator;
         }
 
         updateDisplay();
     }
 
+
     function addDecimal() {
+
         if (justCalculated) {
             expression = "";
             justCalculated = false;
         }
 
-        const currentPart = expression.split(/[+\-*/]/).pop();
+        const currentPart =
+            expression.split(/[+\-*/]/).pop();
 
         if (currentPart.includes(".")) {
             return;
@@ -214,39 +324,50 @@
             "+-*/".includes(expression.slice(-1))
         ) {
             expression += "0.";
-        } else {
+        }
+        else {
             expression += ".";
         }
 
         updateDisplay();
     }
 
+
     function clearCalculator() {
+
         expression = "";
         justCalculated = false;
+
         display.value = "0";
         display.style.fontSize = "";
     }
 
+
     function toggleSign() {
+
         if (expression === "") {
             return;
         }
 
-        const match = expression.match(/(-?\d*\.?\d+)$/);
+        const match =
+            expression.match(/(-?\d*\.?\d+)$/);
 
         if (!match) {
             return;
         }
 
         const number = match[0];
-        const start = expression.length - number.length;
+        const start =
+            expression.length - number.length;
 
         if (number.startsWith("-")) {
+
             expression =
                 expression.slice(0, start) +
                 number.slice(1);
-        } else {
+        }
+        else {
+
             expression =
                 expression.slice(0, start) +
                 "-" +
@@ -256,12 +377,15 @@
         updateDisplay();
     }
 
+
     function percentage() {
+
         if (expression === "") {
             return;
         }
 
-        const match = expression.match(/(-?\d*\.?\d+)$/);
+        const match =
+            expression.match(/(-?\d*\.?\d+)$/);
 
         if (!match) {
             return;
@@ -284,82 +408,230 @@
         updateDisplay();
     }
 
+
     function calculate() {
+
         if (expression === "") {
             return;
         }
 
-        const lastCharacter = expression.slice(-1);
+        const lastCharacter =
+            expression.slice(-1);
 
         if ("+-*/".includes(lastCharacter)) {
             return;
         }
 
         try {
+
             if (!/^[0-9+\-*/. ]+$/.test(expression)) {
                 throw new Error();
             }
 
             let result = Function(
-                '"use strict"; return (' + expression + ')'
+                '"use strict"; return (' +
+                expression +
+                ')'
             )();
 
             if (!Number.isFinite(result)) {
-                display.value = "Cannot divide by zero";
+
+                display.value =
+                    "Cannot divide by zero";
+
                 expression = "";
+
+                resizeDisplay();
+
                 return;
             }
 
             result =
                 Math.round(
-                    (result + Number.EPSILON) * 10000000000
+                    (result + Number.EPSILON)
+                    * 10000000000
                 ) / 10000000000;
 
             expression = result.toString();
+
             display.value = expression;
+
             justCalculated = true;
 
             resizeDisplay();
+        }
+        catch {
 
-        } catch {
             display.value = "Error";
+
             expression = "";
+
             justCalculated = false;
         }
     }
 
-    document.addEventListener("keydown", function(event) {
 
-        if (event.key >= "0" && event.key <= "9") {
-            addNumber(event.key);
+    async function askAI() {
+
+        const questionInput =
+            document.getElementById("aiQuestion");
+
+        const answerBox =
+            document.getElementById("aiAnswer");
+
+        const askButton =
+            document.getElementById("askButton");
+
+        const question =
+            questionInput.value.trim();
+
+        if (!question) {
+
+            answerBox.innerText =
+                "Please enter a question.";
+
+            return;
         }
 
-        else if (["+", "-", "*", "/"].includes(event.key)) {
-            addOperator(event.key);
-        }
+        answerBox.innerText = "Thinking...";
 
-        else if (event.key === ".") {
-            addDecimal();
-        }
+        askButton.disabled = true;
+        askButton.innerText = "Thinking...";
 
-        else if (event.key === "Enter" || event.key === "=") {
-            event.preventDefault();
-            calculate();
-        }
+        try {
 
-        else if (event.key === "Backspace") {
-            expression = expression.slice(0, -1);
-            updateDisplay();
-        }
+            const response =
+                await fetch("/ask-ai", {
 
-        else if (event.key === "Escape") {
-            clearCalculator();
-        }
+                    method: "POST",
 
-        else if (event.key === "%") {
-            percentage();
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        question: question
+                    })
+                });
+
+
+            const data =
+                await response.json();
+
+
+            if (response.ok) {
+
+                answerBox.innerText =
+                    data.answer;
+            }
+            else {
+
+                answerBox.innerText =
+                    data.error ||
+                    "AI request failed.";
+            }
+
         }
-    });
+        catch (error) {
+
+            answerBox.innerText =
+                "Could not connect to AI.";
+        }
+        finally {
+
+            askButton.disabled = false;
+
+            askButton.innerText = "Ask AI";
+        }
+    }
+
+
+    document
+        .getElementById("aiQuestion")
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    askAI();
+                }
+            }
+        );
+
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            /*
+            AI input mein typing karte waqt
+            calculator keyboard shortcuts
+            activate nahi honge.
+            */
+
+            if (
+                event.target.tagName === "INPUT" &&
+                event.target.id === "aiQuestion"
+            ) {
+                return;
+            }
+
+
+            if (
+                event.key >= "0" &&
+                event.key <= "9"
+            ) {
+                addNumber(event.key);
+            }
+
+            else if (
+                ["+", "-", "*", "/"]
+                    .includes(event.key)
+            ) {
+                addOperator(event.key);
+            }
+
+            else if (event.key === ".") {
+                addDecimal();
+            }
+
+            else if (
+                event.key === "Enter" ||
+                event.key === "="
+            ) {
+
+                event.preventDefault();
+
+                calculate();
+            }
+
+            else if (
+                event.key === "Backspace"
+            ) {
+
+                expression =
+                    expression.slice(0, -1);
+
+                updateDisplay();
+            }
+
+            else if (
+                event.key === "Escape"
+            ) {
+                clearCalculator();
+            }
+
+            else if (
+                event.key === "%"
+            ) {
+                percentage();
+            }
+        }
+    );
 </script>
 
 </body>
