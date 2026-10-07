@@ -9,27 +9,39 @@
             box-sizing: border-box;
         }
 
+        html {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             margin: 0;
+            width: 100%;
             min-height: 100vh;
             background: #111;
             font-family: Arial, sans-serif;
-            padding: 20px;
             color: white;
+            padding: 20px;
+            overflow-x: hidden;
         }
 
         .app-layout {
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 360px 1fr;
+            grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
             gap: 20px;
             align-items: start;
         }
 
-        .calculator {
+        .calculator,
+        .chat-panel {
             width: 100%;
+            min-width: 0;
+        }
+
+        .calculator {
             background: #1c1c1c;
             padding: 20px;
             border-radius: 28px;
@@ -46,16 +58,19 @@
             font-size: 42px;
             padding: 15px 5px;
             margin-bottom: 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .buttons {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 12px;
         }
 
         .calc-button {
             width: 100%;
+            min-width: 0;
             aspect-ratio: 1;
             border: none;
             border-radius: 50%;
@@ -65,9 +80,18 @@
             cursor: pointer;
         }
 
+        .calc-button:hover {
+            background: #444;
+        }
+
         .operator,
         .equal {
             background: #ff9500;
+        }
+
+        .operator:hover,
+        .equal:hover {
+            background: #e88900;
         }
 
         .special {
@@ -96,6 +120,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             margin-bottom: 15px;
         }
 
@@ -108,9 +133,10 @@
             border: none;
             background: #333;
             color: white;
-            padding: 8px 12px;
+            padding: 9px 12px;
             border-radius: 8px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         #chatMessages {
@@ -119,6 +145,7 @@
             flex-direction: column;
             gap: 10px;
             margin-bottom: 15px;
+            min-width: 0;
         }
 
         .message {
@@ -127,7 +154,8 @@
             border-radius: 14px;
             line-height: 1.4;
             white-space: pre-wrap;
-            word-wrap: break-word;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .user-message {
@@ -147,10 +175,13 @@
         .chat-input-row {
             display: flex;
             gap: 10px;
+            width: 100%;
         }
 
         #aiQuestion {
             flex: 1;
+            min-width: 0;
+            width: 100%;
             padding: 13px;
             border: none;
             outline: none;
@@ -160,7 +191,12 @@
             font-size: 16px;
         }
 
+        #aiQuestion::placeholder {
+            color: #aaa;
+        }
+
         #askButton {
+            flex-shrink: 0;
             padding: 13px 18px;
             border: none;
             border-radius: 10px;
@@ -172,16 +208,129 @@
 
         #askButton:disabled {
             opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        @media (max-width: 760px) {
+        @media (max-width: 900px) {
+            body {
+                padding: 16px;
+            }
+
+            .app-layout {
+                grid-template-columns: minmax(280px, 330px) minmax(0, 1fr);
+                gap: 16px;
+            }
+
+            .calculator,
+            .chat-panel {
+                padding: 16px;
+            }
+
+            .buttons {
+                gap: 10px;
+            }
+
+            .calc-button {
+                font-size: 21px;
+            }
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 12px;
+            }
+
             .app-layout {
                 grid-template-columns: 1fr;
-                max-width: 380px;
+                max-width: 430px;
+                gap: 16px;
+            }
+
+            .calculator {
+                padding: 16px;
             }
 
             .chat-panel {
+                padding: 16px;
                 min-height: 420px;
+            }
+
+            #display {
+                height: 85px;
+                font-size: 36px;
+            }
+
+            .buttons {
+                gap: 9px;
+            }
+
+            .calc-button {
+                font-size: 20px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 420px) {
+            body {
+                padding: 8px;
+            }
+
+            .calculator,
+            .chat-panel {
+                border-radius: 20px;
+                padding: 13px;
+            }
+
+            #display {
+                height: 75px;
+                font-size: 31px;
+                margin-bottom: 10px;
+            }
+
+            .buttons {
+                gap: 7px;
+            }
+
+            .calc-button {
+                font-size: 18px;
+            }
+
+            .zero {
+                padding-left: 22px;
+            }
+
+            .chat-header {
+                align-items: flex-start;
+            }
+
+            .chat-title {
+                font-size: 18px;
+            }
+
+            #clearChat {
+                font-size: 12px;
+                padding: 8px 9px;
+            }
+
+            .chat-input-row {
+                gap: 7px;
+            }
+
+            #aiQuestion {
+                padding: 12px 10px;
+                font-size: 16px;
+            }
+
+            #askButton {
+                padding: 12px 13px;
+            }
+
+            .message {
+                max-width: 94%;
+                font-size: 14px;
             }
         }
     </style>
@@ -301,11 +450,22 @@
     }
 
     function addDecimal() {
-        const currentPart = expression.split(/[+\-*/]/).pop();
+        if (justCalculated) {
+            expression = "";
+            justCalculated = false;
+        }
 
-        if (currentPart.includes(".")) return;
+        const currentPart =
+            expression.split(/[+\-*/]/).pop();
 
-        if (expression === "" || "+-*/".includes(expression.slice(-1))) {
+        if (currentPart.includes(".")) {
+            return;
+        }
+
+        if (
+            expression === "" ||
+            "+-*/".includes(expression.slice(-1))
+        ) {
             expression += "0.";
         } else {
             expression += ".";
@@ -323,12 +483,14 @@
     function toggleSign() {
         if (expression === "") return;
 
-        const match = expression.match(/(-?\d*\.?\d+)$/);
+        const match =
+            expression.match(/(-?\d*\.?\d+)$/);
 
         if (!match) return;
 
         const number = match[0];
-        const start = expression.length - number.length;
+        const start =
+            expression.length - number.length;
 
         if (number.startsWith("-")) {
             expression =
@@ -347,11 +509,14 @@
     function percentage() {
         if (expression === "") return;
 
-        const match = expression.match(/(-?\d*\.?\d+)$/);
+        const match =
+            expression.match(/(-?\d*\.?\d+)$/);
 
         if (!match) return;
 
         const number = parseFloat(match[0]);
+
+        if (isNaN(number)) return;
 
         expression =
             expression.slice(
@@ -364,6 +529,13 @@
 
     function calculate() {
         if (expression === "") return;
+
+        const lastCharacter =
+            expression.slice(-1);
+
+        if ("+-*/".includes(lastCharacter)) {
+            return;
+        }
 
         try {
             if (!/^[0-9+\-*/. ]+$/.test(expression)) {
@@ -395,6 +567,7 @@
         } catch {
             display.value = "Error";
             expression = "";
+            justCalculated = false;
         }
     }
 
@@ -412,11 +585,6 @@
         chatMessages.appendChild(message);
 
         saveChat();
-
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: "smooth"
-        });
     }
 
     function saveChat() {
@@ -555,6 +723,63 @@
                 );
             }
         );
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.target.id === "aiQuestion") {
+                return;
+            }
+
+            if (
+                event.key >= "0" &&
+                event.key <= "9"
+            ) {
+                addNumber(event.key);
+            }
+
+            else if (
+                ["+", "-", "*", "/"]
+                    .includes(event.key)
+            ) {
+                addOperator(event.key);
+            }
+
+            else if (event.key === ".") {
+                addDecimal();
+            }
+
+            else if (
+                event.key === "Enter" ||
+                event.key === "="
+            ) {
+                event.preventDefault();
+                calculate();
+            }
+
+            else if (
+                event.key === "Backspace"
+            ) {
+                expression =
+                    expression.slice(0, -1);
+
+                updateDisplay();
+            }
+
+            else if (
+                event.key === "Escape"
+            ) {
+                clearCalculator();
+            }
+
+            else if (
+                event.key === "%"
+            ) {
+                percentage();
+            }
+        }
+    );
 
     loadChat();
 </script>
