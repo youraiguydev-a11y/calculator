@@ -1,41 +1,59 @@
-from flask import Flask, render_template, request
+import os
+
+from flask import Flask, render_template, request, jsonify
+from openai import OpenAI
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
-def calculator():
-    result = None
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY")
+)
 
-    if request.method == "POST":
-        num1 = request.form.get("num1")
-        num2 = request.form.get("num2")
-        choice = request.form.get("choice")
 
-        try:
-            num1 = float(num1)
-            num2 = float(num2)
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-            if choice == "+":
-                result = num1 + num2
-            elif choice == "-":
-                result = num1 - num2
-            elif choice == "*":
-                result = num1 * num2
-            elif choice == "/":
-                if num2 == 0:
-                    result = "Cannot divide by zero"
-                else:
-                    result = num1 / num2
-            else:
-                result = "Invalid operation"
 
-            if isinstance(result, float) and result.is_integer():
-                result = int(result)
+@app.route("/ask-ai", methods=["POST"])
+def ask_ai():
+    try:
+        data = request.get_json()
 
-        except ValueError:
-            result = "Please enter valid numbers"
+        if not data:
+            return jsonify({
+                "error": "No data received."
+            }), 400
 
-    return render_template("index.html", result=result)
+        question = data.get("question", "").strip()
+
+        if not question:
+            return jsonify({
+                "error": "Please enter a math question."
+            }), 400
+
+        response = client.responses.create(
+            model="gpt-6-luna",
+            instructions=(
+                "You are a helpful math assistant. "
+                "Solve the user's math question accurately. "
+                "Give the final answer first, followed by a short and simple explanation. "
+                "Keep the response concise."
+            ),
+            input=question
+        )
+
+        return jsonify({
+            "answer": response.output_text
+        })
+
+    except Exception as error:
+        print("OpenAI error:", error)
+
+        return jsonify({
+            "error": "AI request failed."
+        }), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
