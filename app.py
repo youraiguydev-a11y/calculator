@@ -2,6 +2,7 @@ import os
 
 from flask import Flask, render_template, request, jsonify
 from google import genai
+from google.genai import types
 
 app = Flask(__name__)
 
@@ -9,45 +10,18 @@ client = genai.Client(
     api_key=os.environ.get("GEMINI_API_KEY")
 )
 
-selected_model = None
+PRIMARY_MODEL = "gemini-3.5-flash-lite"
+BACKUP_MODEL = "gemini-3.8-flash"
 
 
-def get_working_model():
-    global selected_model
-
-    if selected_model:
-        return selected_model
-
-    supported_models = []
-
-    for model in client.models.list():
-        actions = model.supported_actions or []
-
-        if "generateContent" in actions:
-            supported_models.append(model.name)
-
-    # Prefer newer Flash models first
-    preferred_models = [
-        "models/gemini-3.8-flash",
-        "models/gemini-3.5-flash-lite",
-        "models/gemini-2.5-flash-lite",
-        "models/gemini-2.5-flash"
-    ]
-
-    for model_name in preferred_models:
-        if model_name in supported_models:
-            selected_model = model_name
-            return selected_model
-
-    # If preferred models aren't available,
-    # use any Gemini model that supports generateContent
-    for model_name in supported_models:
-        if "gemini" in model_name.lower():
-            selected_model = model_name
-            return selected_model
-
-    raise RuntimeError(
-        "No Gemini model with generateContent support was found."
+def ask_model(model_name, prompt):
+    return client.models.generate_content(
+        model=model_name,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            max_output_tokens=120,
+            temperature=0.2
+        )
     )
 
 
@@ -67,17 +41,27 @@ def ask_ai():
                 "error": "Please enter a question."
             }), 400
 
-        model_name = get_working_model()
+        if len(question) > 700:
+            return jsonify({
+                "error": "Please keep the question shorter."
+            }), 400
 
-        response = client.models.generate_content(
-            model=model_name,
-            contents=(
-                "You are a concise calculator and math assistant. "
-                "Solve the question accurately. "
-                "Give the final answer first, then a short explanation.\n\n"
-                f"Question: {question}"
-            )
+        prompt = (
+            "Answer accurately and briefly. "
+            "For maths, give the final answer first. "
+            "Use no more than 2 short sentences.\n"
+            f"Question: {question}"
         )
+
+        # Fast model first
+        try:
+            response = ask_model(PRIMARY_MODEL, prompt)
+
+        except Exception as primary_error:
+            print("PRIMARY MODEL ERROR:", repr(primary_error))
+
+            # Backup immediately
+            response = ask_model(BACKUP_MODEL, prompt)
 
         if not response.text:
             return jsonify({
@@ -85,31 +69,24 @@ def ask_ai():
             }), 500
 
         return jsonify({
-            "answer": response.text
+            "answer": response.text.strip()
         })
 
     except Exception as error:
-        print("GEMINI ERROR:", repr(error))
+        print("FINAL GEMINI ERROR:", repr(error))
 
         return jsonify({
-            "error": "AI request failed."
-        }), 500
+            "error": "AI is temporarily unavailable. Please try again."
+        }), 503
 
 
 @app.route("/model-check")
 def model_check():
-    try:
-        model_name = get_working_model()
-
-        return jsonify({
-            "selected_model": model_name,
-            "status": "ready"
-        })
-
-    except Exception as error:
-        return jsonify({
-            "error": str(error)
-        }), 500
+    return jsonify({
+        "primary": PRIMARY_MODEL,
+        "backup": BACKUP_MODEL,
+        "status": "ready"
+    })
 
 
 if __name__ == "__main__":
