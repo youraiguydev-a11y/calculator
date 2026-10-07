@@ -18,7 +18,9 @@ def call_with_retry(**kwargs):
         try:
             return client.responses.create(**kwargs)
 
-        except RateLimitError:
+        except RateLimitError as error:
+            print("OPENAI RATE LIMIT ERROR:", error)
+
             if attempt == len(delays):
                 raise
 
@@ -71,44 +73,34 @@ def ask_ai():
             }), 400
 
 
-        # Current/live information
         if needs_web_search(question):
 
             response = call_with_retry(
                 model="gpt-5-mini",
-
                 instructions=(
                     "Give a short and accurate answer. "
                     "Use web search for current information such as "
                     "currency rates, weather, prices, or recent facts."
                 ),
-
                 tools=[
                     {
                         "type": "web_search"
                     }
                 ],
-
                 input=question,
-
                 max_output_tokens=150
             )
 
-
-        # Normal maths/general question
         else:
 
             response = call_with_retry(
                 model="gpt-5-mini",
-
                 instructions=(
                     "You are a concise calculator assistant. "
                     "Solve maths accurately. "
                     "Give the final answer first, then a very short explanation."
                 ),
-
                 input=question,
-
                 max_output_tokens=120
             )
 
@@ -118,7 +110,9 @@ def ask_ai():
         })
 
 
-    except RateLimitError:
+    except RateLimitError as error:
+
+        print("FINAL OPENAI RATE LIMIT ERROR:", error)
 
         return jsonify({
             "error": "AI is temporarily busy. Please try again shortly."
@@ -127,7 +121,7 @@ def ask_ai():
 
     except Exception as error:
 
-        print("Ask AI error:", error)
+        print("ASK AI GENERAL ERROR:", error)
 
         return jsonify({
             "error": "AI request failed."
@@ -137,7 +131,6 @@ def ask_ai():
 @app.route("/suggest", methods=["POST"])
 def suggest():
     try:
-
         data = request.get_json() or {}
         expression = data.get("expression", "").strip()
 
@@ -149,7 +142,6 @@ def suggest():
 
         response = call_with_retry(
             model="gpt-5-mini",
-
             instructions=(
                 "Check the user's calculator expression. "
                 "Only give a suggestion if there is a clear mistake "
@@ -158,9 +150,7 @@ def suggest():
                 "Use one very short sentence. "
                 "If no suggestion is needed, answer exactly NONE."
             ),
-
             input=f"Expression: {expression}",
-
             max_output_tokens=40
         )
 
@@ -176,7 +166,9 @@ def suggest():
         })
 
 
-    except RateLimitError:
+    except RateLimitError as error:
+
+        print("SUGGESTION RATE LIMIT ERROR:", error)
 
         return jsonify({
             "suggestion": ""
@@ -185,7 +177,7 @@ def suggest():
 
     except Exception as error:
 
-        print("Suggestion error:", error)
+        print("SUGGESTION GENERAL ERROR:", error)
 
         return jsonify({
             "suggestion": ""
