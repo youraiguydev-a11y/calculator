@@ -1,13 +1,33 @@
 import os
+import time
 
 from flask import Flask, render_template, request, jsonify
-from openai import OpenAI
+from openai import OpenAI, RateLimitError
 
 app = Flask(__name__)
 
 client = OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY")
 )
+
+
+def create_response_with_retry(**kwargs):
+    """
+    Temporary 429 rate-limit aaye to thora wait karke
+    automatically retry karega.
+    """
+
+    delays = [1, 2, 4]
+
+    for attempt in range(len(delays) + 1):
+        try:
+            return client.responses.create(**kwargs)
+
+        except RateLimitError:
+            if attempt == len(delays):
+                raise
+
+            time.sleep(delays[attempt])
 
 
 @app.route("/")
@@ -26,26 +46,43 @@ def ask_ai():
                 "error": "Please enter a question."
             }), 400
 
-        response = client.responses.create(
+        # Prevent unnecessarily huge prompts
+        if len(question) > 1000:
+            return jsonify({
+                "error": "Please keep the question shorter."
+            }), 400
+
+        response = create_response_with_retry(
             model="gpt-6-luna",
+
             instructions=(
-                "You are a helpful assistant inside a calculator app. "
+                "You are a concise assistant inside a calculator app. "
                 "For maths questions, calculate carefully and give the final answer first. "
-                "For questions that need current information, such as exchange rates, "
-                "weather, prices, or recent information, use web search when needed. "
-                "Keep answers short, clear, and easy to understand."
+                "For current information such as exchange rates, weather, prices, "
+                "or recent information, use web search when necessary. "
+                "Keep the answer short and clear."
             ),
+
             tools=[
                 {
                     "type": "web_search"
                 }
             ],
-            input=question
+
+            input=question,
+
+            max_output_tokens=180
         )
 
         return jsonify({
             "answer": response.output_text
         })
+
+
+    except RateLimitError:
+        return jsonify({
+            "error": "AI is busy right now. Please try again in a few seconds."
+        }), 429
 
     except Exception as error:
         print("Ask AI error:", error)
@@ -66,19 +103,29 @@ def suggest():
                 "suggestion": ""
             })
 
-        response = client.responses.create(
+        # Suggestions only need a small expression
+        if len(expression) > 150:
+            return jsonify({
+                "suggestion": ""
+            })
+
+        response = create_response_with_retry(
             model="gpt-6-luna",
+
             instructions=(
-                "You are a smart calculator assistant watching the user's calculation "
-                "while they are typing. "
-                "Only give a suggestion if the calculation appears incorrect, confusing, "
-                "incomplete, or there is a clearly better mathematical way to write it. "
-                "Do not interrupt correct simple calculations. "
-                "Do not guess what the user means unless the likely mistake is clear. "
-                "Keep the suggestion to one short sentence. "
-                "If no useful suggestion is needed, reply with exactly NONE."
+                "You are a smart calculator assistant. "
+                "Look at the calculation the user is currently entering. "
+                "Only suggest something when there is a clear mathematical mistake, "
+                "confusing expression, or clearly better way to write it. "
+                "Do not interrupt normal correct calculations. "
+                "Never invent context. "
+                "Give at most one short sentence. "
+                "If no suggestion is useful, reply exactly NONE."
             ),
-            input=f"Current calculation: {expression}"
+
+            input=f"Calculation: {expression}",
+
+            max_output_tokens=60
         )
 
         suggestion = response.output_text.strip()
@@ -88,6 +135,13 @@ def suggest():
 
         return jsonify({
             "suggestion": suggestion
+        })
+
+
+    except RateLimitError:
+        # Don't annoy user with an error while typing
+        return jsonify({
+            "suggestion": ""
         })
 
     except Exception as error:
