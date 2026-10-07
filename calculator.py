@@ -1,107 +1,264 @@
-import tkinter as tk
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
 
-def calculate():
-    try:
-        num1 = float(entry1.get())
-        num2 = float(entry2.get())
-        choice = operation.get()
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-        if choice == "+":
-            result.config(text=f"Result: {num1 + num2}")
+        html, body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+        }
 
-        elif choice == "-":
-            result.config(text=f"Result: {num1 - num2}")
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #111;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            overflow-x: hidden;
+        }
 
-        elif choice == "*":
-            result.config(text=f"Result: {num1 * num2}")
+        .calculator {
+            width: 100%;
+            max-width: 340px;
+            background: #1c1c1c;
+            padding: 20px;
+            border-radius: 28px;
+        }
 
-        elif choice == "/":
-            if num2 == 0:
-                result.config(text="Cannot divide by zero")
-            else:
-                result.config(text=f"Result: {num1 / num2}")
+        #display {
+            width: 100%;
+            height: 100px;
+            background: #1c1c1c;
+            color: white;
+            border: none;
+            outline: none;
+            font-size: clamp(32px, 8vw, 42px);
+            text-align: right;
+            padding: 20px 10px;
+            margin-bottom: 15px;
+        }
 
-        else:
-            result.config(text="Invalid choice")
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
 
-    except:
-        result.config(text="Invalid number")
+        button {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border: none;
+            border-radius: 50%;
+            background: #333;
+            color: white;
+            font-size: clamp(18px, 5vw, 25px);
+            cursor: pointer;
+        }
 
+        button:hover {
+            background: #444;
+        }
 
-window = tk.Tk()
-window.title("My Calculator")
-window.geometry("350x450")
-window.configure(bg="#1e1e1e")
+        .operator,
+        .equal {
+            background: #ff9500;
+        }
 
+        .operator:hover,
+        .equal:hover {
+            background: #e88900;
+        }
 
-title = tk.Label(
-    window,
-    text="CALCULATOR",
-    font=("Arial", 24, "bold"),
-    bg="#1e1e1e",
-    fg="white"
-)
-title.pack(pady=20)
+        .special {
+            background: #a5a5a5;
+            color: black;
+        }
 
+        .zero {
+            grid-column: span 2;
+            aspect-ratio: auto;
+            border-radius: 35px;
+            text-align: left;
+            padding-left: 27px;
+        }
 
-entry1 = tk.Entry(
-    window,
-    font=("Arial", 18),
-    justify="center"
-)
-entry1.pack(pady=10)
+        @media (max-width: 420px) {
+            body {
+                padding: 12px;
+            }
 
+            .calculator {
+                max-width: 320px;
+                padding: 16px;
+                border-radius: 24px;
+            }
 
-entry2 = tk.Entry(
-    window,
-    font=("Arial", 18),
-    justify="center"
-)
-entry2.pack(pady=10)
+            #display {
+                height: 90px;
+                margin-bottom: 12px;
+            }
 
+            .buttons {
+                gap: 9px;
+            }
+        }
+    </style>
+</head>
 
-operation = tk.StringVar()
+<body>
 
+<div class="calculator">
 
-button_frame = tk.Frame(window, bg="#1e1e1e")
-button_frame.pack(pady=20)
+    <input
+        type="text"
+        id="display"
+        value=""
+        readonly
+    >
 
+    <div class="buttons">
 
-operations = ["+", "-", "*", "/"]
+        <button class="special" onclick="clearDisplay()">C</button>
+        <button class="special" onclick="deleteNumber()">⌫</button>
+        <button class="operator" onclick="addOperator('/')">÷</button>
+        <button class="operator" onclick="addOperator('*')">×</button>
 
-for op in operations:
-    button = tk.Radiobutton(
-        button_frame,
-        text=op,
-        variable=operation,
-        value=op,
-        font=("Arial", 16),
-        width=3
-    )
-    button.pack(side="left", padx=5)
+        <button onclick="addNumber('7')">7</button>
+        <button onclick="addNumber('8')">8</button>
+        <button onclick="addNumber('9')">9</button>
+        <button class="operator" onclick="addOperator('-')">−</button>
 
+        <button onclick="addNumber('4')">4</button>
+        <button onclick="addNumber('5')">5</button>
+        <button onclick="addNumber('6')">6</button>
+        <button class="operator" onclick="addOperator('+')">+</button>
 
-calculate_button = tk.Button(
-    window,
-    text="Calculate",
-    command=calculate,
-    font=("Arial", 16, "bold"),
-    width=15,
-    height=2
-)
+        <button onclick="addNumber('1')">1</button>
+        <button onclick="addNumber('2')">2</button>
+        <button onclick="addNumber('3')">3</button>
 
-calculate_button.pack(pady=20)
+        <button class="zero" onclick="addNumber('0')">0</button>
 
+        <button class="equal" onclick="calculate()">=</button>
 
-result = tk.Label(
-    window,
-    text="Result:",
-    font=("Arial", 18),
-    bg="#1e1e1e",
-    fg="white"
-)
+    </div>
 
-result.pack(pady=15)
+</div>
 
+<script>
 
-window.mainloop()
+    let expression = "";
+    let justCalculated = false;
+
+    const display = document.getElementById("display");
+
+    function updateDisplay() {
+        display.value = expression
+            .replace(/\*/g, "×")
+            .replace(/\//g, "÷");
+    }
+
+    function addNumber(number) {
+
+        if (justCalculated) {
+            expression = "";
+            justCalculated = false;
+        }
+
+        expression += number;
+        updateDisplay();
+    }
+
+    function addOperator(operator) {
+
+        if (expression === "") {
+            return;
+        }
+
+        justCalculated = false;
+
+        const lastCharacter = expression.slice(-1);
+
+        if ("+-*/".includes(lastCharacter)) {
+            expression = expression.slice(0, -1) + operator;
+        } else {
+            expression += operator;
+        }
+
+        updateDisplay();
+    }
+
+    function clearDisplay() {
+        expression = "";
+        justCalculated = false;
+        display.value = "";
+    }
+
+    function deleteNumber() {
+
+        if (justCalculated) {
+            clearDisplay();
+            return;
+        }
+
+        expression = expression.slice(0, -1);
+        updateDisplay();
+    }
+
+    function calculate() {
+
+        if (expression === "") {
+            return;
+        }
+
+        const lastCharacter = expression.slice(-1);
+
+        if ("+-*/".includes(lastCharacter)) {
+            return;
+        }
+
+        try {
+
+            if (!/^[0-9+\-*/. ]+$/.test(expression)) {
+                throw new Error("Invalid expression");
+            }
+
+            let result = Function(
+                '"use strict"; return (' + expression + ')'
+            )();
+
+            if (!Number.isFinite(result)) {
+                display.value = "Error";
+                expression = "";
+                return;
+            }
+
+            result = Math.round((result + Number.EPSILON) * 10000000000)
+                     / 10000000000;
+
+            expression = result.toString();
+
+            display.value = expression;
+
+            justCalculated = true;
+
+        } catch (error) {
+            display.value = "Error";
+            expression = "";
+            justCalculated = false;
+        }
+    }
+
+</script>
+
+</body>
+</html>
