@@ -29,17 +29,26 @@ def ask_ai():
 
         if not question:
             return jsonify({
-                "error": "Please enter a math question."
+                "error": "Please enter a question."
             }), 400
 
         response = client.responses.create(
             model="gpt-6-luna",
+
             instructions=(
-                "You are a helpful math assistant. "
-                "Solve the user's math question accurately. "
-                "Give the final answer first, followed by a short and simple explanation. "
-                "Keep the response concise."
+                "You are a helpful assistant inside a calculator app. "
+                "For maths questions, calculate accurately and give the final answer first. "
+                "For questions that need current information such as currency exchange rates, "
+                "prices, weather, current events, or other changing information, use web search. "
+                "Keep answers short, clear, and easy to understand."
             ),
+
+            tools=[
+                {
+                    "type": "web_search"
+                }
+            ],
+
             input=question
         )
 
