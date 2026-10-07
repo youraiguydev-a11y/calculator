@@ -12,18 +12,20 @@
         body {
             margin: 0;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             background: #111;
             font-family: Arial, sans-serif;
             padding: 20px;
             color: white;
         }
 
-        .wrapper {
+        .app-layout {
             width: 100%;
-            max-width: 360px;
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 20px;
+            align-items: start;
         }
 
         .calculator {
@@ -63,18 +65,9 @@
             cursor: pointer;
         }
 
-        .calc-button:hover {
-            background: #444;
-        }
-
         .operator,
         .equal {
             background: #ff9500;
-        }
-
-        .operator:hover,
-        .equal:hover {
-            background: #e88900;
         }
 
         .special {
@@ -90,21 +83,74 @@
             padding-left: 28px;
         }
 
-        .ai-section {
-            margin-top: 18px;
+        .chat-panel {
             background: #1c1c1c;
-            padding: 18px;
-            border-radius: 20px;
+            border-radius: 28px;
+            padding: 20px;
+            min-height: 560px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .ai-title {
-            font-size: 18px;
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chat-title {
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 12px;
+        }
+
+        #clearChat {
+            border: none;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #chatMessages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 11px 13px;
+            border-radius: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: #ff9500;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message {
+            align-self: flex-start;
+            background: #333;
+            color: white;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 10px;
         }
 
         #aiQuestion {
-            width: 100%;
+            flex: 1;
             padding: 13px;
             border: none;
             outline: none;
@@ -114,60 +160,28 @@
             font-size: 16px;
         }
 
-        #aiQuestion::placeholder {
-            color: #aaa;
-        }
-
         #askButton {
-            width: 100%;
-            margin-top: 10px;
-            padding: 13px;
+            padding: 13px 18px;
             border: none;
             border-radius: 10px;
             background: #ff9500;
             color: white;
-            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
         }
 
         #askButton:disabled {
             opacity: 0.6;
-            cursor: not-allowed;
         }
 
-        #aiAnswer {
-            margin-top: 14px;
-            color: #eee;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        @media (max-width: 400px) {
-            body {
-                padding: 12px;
+        @media (max-width: 760px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+                max-width: 380px;
             }
 
-            .wrapper {
-                max-width: 320px;
-            }
-
-            .calculator {
-                padding: 15px;
-            }
-
-            .buttons {
-                gap: 9px;
-            }
-
-            #display {
-                height: 85px;
-                font-size: 36px;
-            }
-
-            .calc-button {
-                font-size: 21px;
+            .chat-panel {
+                min-height: 420px;
             }
         }
     </style>
@@ -175,7 +189,7 @@
 
 <body>
 
-<div class="wrapper">
+<div class="app-layout">
 
     <div class="calculator">
 
@@ -211,21 +225,26 @@
 
     </div>
 
-    <div class="ai-section">
+    <div class="chat-panel">
 
-        <div class="ai-title">Ask AI</div>
+        <div class="chat-header">
+            <div class="chat-title">AI Chat</div>
+            <button id="clearChat">Clear Chat</button>
+        </div>
 
-        <input
-            type="text"
-            id="aiQuestion"
-            placeholder="Ask a math question..."
-        >
+        <div id="chatMessages"></div>
 
-        <button id="askButton" onclick="askAI()">
-            Ask AI
-        </button>
+        <div class="chat-input-row">
+            <input
+                type="text"
+                id="aiQuestion"
+                placeholder="Ask anything..."
+            >
 
-        <div id="aiAnswer"></div>
+            <button id="askButton" onclick="askAI()">
+                Send
+            </button>
+        </div>
 
     </div>
 
@@ -236,42 +255,20 @@
     let justCalculated = false;
 
     const display = document.getElementById("display");
-
+    const chatMessages = document.getElementById("chatMessages");
 
     function updateDisplay() {
-
         if (expression === "") {
             display.value = "0";
-            resizeDisplay();
             return;
         }
 
         display.value = expression
             .replace(/\*/g, "×")
             .replace(/\//g, "÷");
-
-        resizeDisplay();
     }
-
-
-    function resizeDisplay() {
-
-        const length = display.value.length;
-
-        if (length > 16) {
-            display.style.fontSize = "24px";
-        }
-        else if (length > 11) {
-            display.style.fontSize = "30px";
-        }
-        else {
-            display.style.fontSize = "";
-        }
-    }
-
 
     function addNumber(number) {
-
         if (justCalculated) {
             expression = "";
             justCalculated = false;
@@ -281,16 +278,12 @@
         updateDisplay();
     }
 
-
     function addOperator(operator) {
-
         if (expression === "") {
-
             if (operator === "-") {
                 expression = "-";
                 updateDisplay();
             }
-
             return;
         }
 
@@ -300,78 +293,48 @@
 
         if ("+-*/".includes(lastCharacter)) {
             expression = expression.slice(0, -1) + operator;
-        }
-        else {
+        } else {
             expression += operator;
         }
 
         updateDisplay();
     }
 
-
     function addDecimal() {
+        const currentPart = expression.split(/[+\-*/]/).pop();
 
-        if (justCalculated) {
-            expression = "";
-            justCalculated = false;
-        }
+        if (currentPart.includes(".")) return;
 
-        const currentPart =
-            expression.split(/[+\-*/]/).pop();
-
-        if (currentPart.includes(".")) {
-            return;
-        }
-
-        if (
-            expression === "" ||
-            "+-*/".includes(expression.slice(-1))
-        ) {
+        if (expression === "" || "+-*/".includes(expression.slice(-1))) {
             expression += "0.";
-        }
-        else {
+        } else {
             expression += ".";
         }
 
         updateDisplay();
     }
 
-
     function clearCalculator() {
-
         expression = "";
         justCalculated = false;
-
         display.value = "0";
-        display.style.fontSize = "";
     }
 
-
     function toggleSign() {
+        if (expression === "") return;
 
-        if (expression === "") {
-            return;
-        }
+        const match = expression.match(/(-?\d*\.?\d+)$/);
 
-        const match =
-            expression.match(/(-?\d*\.?\d+)$/);
-
-        if (!match) {
-            return;
-        }
+        if (!match) return;
 
         const number = match[0];
-        const start =
-            expression.length - number.length;
+        const start = expression.length - number.length;
 
         if (number.startsWith("-")) {
-
             expression =
                 expression.slice(0, start) +
                 number.slice(1);
-        }
-        else {
-
+        } else {
             expression =
                 expression.slice(0, start) +
                 "-" +
@@ -381,53 +344,28 @@
         updateDisplay();
     }
 
-
     function percentage() {
+        if (expression === "") return;
 
-        if (expression === "") {
-            return;
-        }
+        const match = expression.match(/(-?\d*\.?\d+)$/);
 
-        const match =
-            expression.match(/(-?\d*\.?\d+)$/);
-
-        if (!match) {
-            return;
-        }
+        if (!match) return;
 
         const number = parseFloat(match[0]);
-
-        if (isNaN(number)) {
-            return;
-        }
-
-        const percentageValue = number / 100;
 
         expression =
             expression.slice(
                 0,
                 expression.length - match[0].length
-            ) + percentageValue;
+            ) + (number / 100);
 
         updateDisplay();
     }
 
-
     function calculate() {
-
-        if (expression === "") {
-            return;
-        }
-
-        const lastCharacter =
-            expression.slice(-1);
-
-        if ("+-*/".includes(lastCharacter)) {
-            return;
-        }
+        if (expression === "") return;
 
         try {
-
             if (!/^[0-9+\-*/. ]+$/.test(expression)) {
                 throw new Error();
             }
@@ -439,11 +377,8 @@
             )();
 
             if (!Number.isFinite(result)) {
-
                 display.value = "Cannot divide by zero";
                 expression = "";
-                resizeDisplay();
-
                 return;
             }
 
@@ -454,36 +389,61 @@
                 ) / 10000000000;
 
             expression = result.toString();
-
             display.value = expression;
-
             justCalculated = true;
 
-            resizeDisplay();
-        }
-        catch {
-
+        } catch {
             display.value = "Error";
-
             expression = "";
-
-            justCalculated = false;
         }
     }
 
+    function addMessage(text, type) {
+        const message = document.createElement("div");
+
+        message.className =
+            "message " +
+            (type === "user"
+                ? "user-message"
+                : "ai-message");
+
+        message.innerText = text;
+
+        chatMessages.appendChild(message);
+
+        saveChat();
+
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: "smooth"
+        });
+    }
+
+    function saveChat() {
+        localStorage.setItem(
+            "calculatorChat",
+            chatMessages.innerHTML
+        );
+    }
+
+    function loadChat() {
+        const saved =
+            localStorage.getItem("calculatorChat");
+
+        if (saved) {
+            chatMessages.innerHTML = saved;
+        }
+    }
 
     function wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise(resolve =>
+            setTimeout(resolve, ms)
+        );
     }
 
-
     async function askAI() {
-
         const questionInput =
             document.getElementById("aiQuestion");
-
-        const answerBox =
-            document.getElementById("aiAnswer");
 
         const askButton =
             document.getElementById("askButton");
@@ -491,18 +451,14 @@
         const question =
             questionInput.value.trim();
 
-        if (!question) {
+        if (!question) return;
 
-            answerBox.innerText =
-                "Please enter a question.";
+        addMessage(question, "user");
 
-            return;
-        }
+        questionInput.value = "";
 
         askButton.disabled = true;
         askButton.innerText = "Thinking...";
-
-        answerBox.innerText = "Thinking...";
 
         const delays = [0, 800, 1500];
 
@@ -517,7 +473,6 @@
             }
 
             try {
-
                 const controller =
                     new AbortController();
 
@@ -529,18 +484,14 @@
 
                 const response =
                     await fetch("/ask-ai", {
-
                         method: "POST",
-
                         headers: {
                             "Content-Type":
                                 "application/json"
                         },
-
                         body: JSON.stringify({
                             question: question
                         }),
-
                         signal: controller.signal
                     });
 
@@ -553,120 +504,59 @@
                     response.ok &&
                     data.answer
                 ) {
-
-                    answerBox.innerText =
-                        data.answer;
+                    addMessage(
+                        data.answer,
+                        "ai"
+                    );
 
                     askButton.disabled = false;
-
-                    askButton.innerText =
-                        "Ask AI";
+                    askButton.innerText = "Send";
 
                     return;
                 }
 
+            } catch (error) {
                 console.log(
-                    "AI attempt failed:",
+                    "AI retry:",
                     attempt + 1
-                );
-
-            }
-            catch (error) {
-
-                console.log(
-                    "AI request error:",
-                    attempt + 1,
-                    error
                 );
             }
         }
 
-        answerBox.innerText =
-            "AI is temporarily unavailable. Please try again.";
+        addMessage(
+            "AI is temporarily unavailable. Please try again.",
+            "ai"
+        );
 
         askButton.disabled = false;
-
-        askButton.innerText = "Ask AI";
+        askButton.innerText = "Send";
     }
-
 
     document
         .getElementById("aiQuestion")
         .addEventListener(
             "keydown",
             function(event) {
-
                 if (event.key === "Enter") {
-
                     event.preventDefault();
-
                     askAI();
                 }
             }
         );
 
-
-    document.addEventListener(
-        "keydown",
-        function(event) {
-
-            if (
-                event.target.id === "aiQuestion"
-            ) {
-                return;
+    document
+        .getElementById("clearChat")
+        .addEventListener(
+            "click",
+            function() {
+                chatMessages.innerHTML = "";
+                localStorage.removeItem(
+                    "calculatorChat"
+                );
             }
+        );
 
-            if (
-                event.key >= "0" &&
-                event.key <= "9"
-            ) {
-                addNumber(event.key);
-            }
-
-            else if (
-                ["+", "-", "*", "/"]
-                    .includes(event.key)
-            ) {
-                addOperator(event.key);
-            }
-
-            else if (event.key === ".") {
-                addDecimal();
-            }
-
-            else if (
-                event.key === "Enter" ||
-                event.key === "="
-            ) {
-
-                event.preventDefault();
-
-                calculate();
-            }
-
-            else if (
-                event.key === "Backspace"
-            ) {
-
-                expression =
-                    expression.slice(0, -1);
-
-                updateDisplay();
-            }
-
-            else if (
-                event.key === "Escape"
-            ) {
-                clearCalculator();
-            }
-
-            else if (
-                event.key === "%"
-            ) {
-                percentage();
-            }
-        }
-    );
+    loadChat();
 </script>
 
 </body>
