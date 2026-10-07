@@ -4,44 +4,35 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def calculator():
-
-    result = ""
+    result = None
 
     if request.method == "POST":
+        num1 = request.form.get("num1")
+        num2 = request.form.get("num2")
+        choice = request.form.get("choice")
 
-        num1_text = request.form.get("num1", "")
-        num2_text = request.form.get("num2", "")
-        choice = request.form.get("choice", "")
-
-        if num1_text == "" or num2_text == "" or choice == "":
-            result = "Invalid"
-
-        else:
-            num1 = float(num1_text)
-            num2 = float(num2_text)
+        try:
+            num1 = float(num1)
+            num2 = float(num2)
 
             if choice == "+":
                 result = num1 + num2
-
             elif choice == "-":
                 result = num1 - num2
-
             elif choice == "*":
                 result = num1 * num2
-
             elif choice == "/":
                 if num2 == 0:
-                    result = "Error"
+                    result = "Cannot divide by zero"
                 else:
                     result = num1 / num2
-
             else:
-                result = "Invalid"
+                result = "Invalid operation"
 
-            if isinstance(result, float) and result == int(result):
-                result = int(result)
+        except:
+            result = "Please enter valid numbers"
 
     return render_template("index.html", result=result)
 
-
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
