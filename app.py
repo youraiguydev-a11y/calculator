@@ -11,12 +11,7 @@ client = OpenAI(
 )
 
 
-def create_response_with_retry(**kwargs):
-    """
-    Temporary 429 rate-limit aaye to thora wait karke
-    automatically retry karega.
-    """
-
+def call_with_retry(**kwargs):
     delays = [1, 2, 4]
 
     for attempt in range(len(delays) + 1):
@@ -28,6 +23,30 @@ def create_response_with_retry(**kwargs):
                 raise
 
             time.sleep(delays[attempt])
+
+
+def needs_web_search(question):
+    q = question.lower()
+
+    current_words = [
+        "current",
+        "latest",
+        "today",
+        "now",
+        "weather",
+        "exchange rate",
+        "convert",
+        "usd",
+        "pkr",
+        "eur",
+        "gbp",
+        "currency",
+        "price",
+        "bitcoin",
+        "gold"
+    ]
+
+    return any(word in q for word in current_words)
 
 
 @app.route("/")
@@ -46,33 +65,53 @@ def ask_ai():
                 "error": "Please enter a question."
             }), 400
 
-        # Prevent unnecessarily huge prompts
-        if len(question) > 1000:
+        if len(question) > 800:
             return jsonify({
                 "error": "Please keep the question shorter."
             }), 400
 
-        response = create_response_with_retry(
-            model="gpt-6-luna",
 
-            instructions=(
-                "You are a concise assistant inside a calculator app. "
-                "For maths questions, calculate carefully and give the final answer first. "
-                "For current information such as exchange rates, weather, prices, "
-                "or recent information, use web search when necessary. "
-                "Keep the answer short and clear."
-            ),
+        # Current/live information
+        if needs_web_search(question):
 
-            tools=[
-                {
-                    "type": "web_search"
-                }
-            ],
+            response = call_with_retry(
+                model="gpt-5-mini",
 
-            input=question,
+                instructions=(
+                    "Give a short and accurate answer. "
+                    "Use web search for current information such as "
+                    "currency rates, weather, prices, or recent facts."
+                ),
 
-            max_output_tokens=180
-        )
+                tools=[
+                    {
+                        "type": "web_search"
+                    }
+                ],
+
+                input=question,
+
+                max_output_tokens=150
+            )
+
+
+        # Normal maths/general question
+        else:
+
+            response = call_with_retry(
+                model="gpt-5-mini",
+
+                instructions=(
+                    "You are a concise calculator assistant. "
+                    "Solve maths accurately. "
+                    "Give the final answer first, then a very short explanation."
+                ),
+
+                input=question,
+
+                max_output_tokens=120
+            )
+
 
         return jsonify({
             "answer": response.output_text
@@ -80,11 +119,14 @@ def ask_ai():
 
 
     except RateLimitError:
+
         return jsonify({
-            "error": "AI is busy right now. Please try again in a few seconds."
+            "error": "AI is temporarily busy. Please try again shortly."
         }), 429
 
+
     except Exception as error:
+
         print("Ask AI error:", error)
 
         return jsonify({
@@ -95,43 +137,39 @@ def ask_ai():
 @app.route("/suggest", methods=["POST"])
 def suggest():
     try:
+
         data = request.get_json() or {}
         expression = data.get("expression", "").strip()
 
-        if not expression:
+        if not expression or len(expression) > 120:
             return jsonify({
                 "suggestion": ""
             })
 
-        # Suggestions only need a small expression
-        if len(expression) > 150:
-            return jsonify({
-                "suggestion": ""
-            })
 
-        response = create_response_with_retry(
-            model="gpt-6-luna",
+        response = call_with_retry(
+            model="gpt-5-mini",
 
             instructions=(
-                "You are a smart calculator assistant. "
-                "Look at the calculation the user is currently entering. "
-                "Only suggest something when there is a clear mathematical mistake, "
-                "confusing expression, or clearly better way to write it. "
-                "Do not interrupt normal correct calculations. "
-                "Never invent context. "
-                "Give at most one short sentence. "
-                "If no suggestion is useful, reply exactly NONE."
+                "Check the user's calculator expression. "
+                "Only give a suggestion if there is a clear mistake "
+                "or a clearly better mathematical form. "
+                "Do not comment on normal correct calculations. "
+                "Use one very short sentence. "
+                "If no suggestion is needed, answer exactly NONE."
             ),
 
-            input=f"Calculation: {expression}",
+            input=f"Expression: {expression}",
 
-            max_output_tokens=60
+            max_output_tokens=40
         )
+
 
         suggestion = response.output_text.strip()
 
         if suggestion.upper() == "NONE":
             suggestion = ""
+
 
         return jsonify({
             "suggestion": suggestion
@@ -139,12 +177,14 @@ def suggest():
 
 
     except RateLimitError:
-        # Don't annoy user with an error while typing
+
         return jsonify({
             "suggestion": ""
         })
 
+
     except Exception as error:
+
         print("Suggestion error:", error)
 
         return jsonify({
