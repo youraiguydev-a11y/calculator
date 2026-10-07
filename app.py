@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, jsonify
 from google import genai
 
 app = Flask(__name__)
@@ -12,39 +12,25 @@ client = genai.Client(
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return "Gemini model checker is running."
 
 
-@app.route("/ask-ai", methods=["POST"])
-def ask_ai():
+@app.route("/models")
+def models():
     try:
-        data = request.get_json() or {}
-        question = data.get("question", "").strip()
+        available_models = []
 
-        if not question:
-            return jsonify({
-                "error": "Please enter a question."
-            }), 400
-
-        response = client.models.generate_content(
-            model="gemini-3.8-flash",
-            contents=(
-                "You are a concise calculator and math assistant. "
-                "Answer accurately. Give the final answer first, "
-                "then a short and simple explanation.\n\n"
-                f"Question: {question}"
-            )
-        )
+        for model in client.models.list():
+            if "generateContent" in model.supported_actions:
+                available_models.append(model.name)
 
         return jsonify({
-            "answer": response.text
+            "models": available_models
         })
 
     except Exception as error:
-        print("GEMINI ERROR:", error)
-
         return jsonify({
-            "error": "AI request failed."
+            "error": str(error)
         }), 500
 
 
