@@ -63,9 +63,18 @@
             cursor: pointer;
         }
 
+        .calc-button:hover {
+            background: #444;
+        }
+
         .operator,
         .equal {
             background: #ff9500;
+        }
+
+        .operator:hover,
+        .equal:hover {
+            background: #e88900;
         }
 
         .special {
@@ -83,7 +92,6 @@
 
         .ai-section {
             margin-top: 18px;
-            width: 100%;
             background: #1c1c1c;
             padding: 18px;
             border-radius: 20px;
@@ -97,9 +105,9 @@
 
         #aiQuestion {
             width: 100%;
+            padding: 13px;
             border: none;
             outline: none;
-            padding: 13px;
             border-radius: 10px;
             background: #333;
             color: white;
@@ -112,9 +120,9 @@
 
         #askButton {
             width: 100%;
-            border: none;
             margin-top: 10px;
             padding: 13px;
+            border: none;
             border-radius: 10px;
             background: #ff9500;
             color: white;
@@ -130,8 +138,8 @@
 
         #aiAnswer {
             margin-top: 14px;
-            line-height: 1.5;
             color: #eee;
+            line-height: 1.5;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
@@ -203,7 +211,6 @@
 
     </div>
 
-
     <div class="ai-section">
 
         <div class="ai-title">Ask AI</div>
@@ -223,7 +230,6 @@
     </div>
 
 </div>
-
 
 <script>
     let expression = "";
@@ -272,7 +278,6 @@
         }
 
         expression += number;
-
         updateDisplay();
     }
 
@@ -294,8 +299,7 @@
         const lastCharacter = expression.slice(-1);
 
         if ("+-*/".includes(lastCharacter)) {
-            expression =
-                expression.slice(0, -1) + operator;
+            expression = expression.slice(0, -1) + operator;
         }
         else {
             expression += operator;
@@ -436,11 +440,8 @@
 
             if (!Number.isFinite(result)) {
 
-                display.value =
-                    "Cannot divide by zero";
-
+                display.value = "Cannot divide by zero";
                 expression = "";
-
                 resizeDisplay();
 
                 return;
@@ -471,6 +472,11 @@
     }
 
 
+    function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+
     async function askAI() {
 
         const questionInput =
@@ -493,57 +499,94 @@
             return;
         }
 
-        answerBox.innerText = "Thinking...";
-
         askButton.disabled = true;
         askButton.innerText = "Thinking...";
 
-        try {
+        answerBox.innerText = "Thinking...";
 
-            const response =
-                await fetch("/ask-ai", {
+        const delays = [0, 800, 1500];
 
-                    method: "POST",
+        for (
+            let attempt = 0;
+            attempt < delays.length;
+            attempt++
+        ) {
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        question: question
-                    })
-                });
-
-
-            const data =
-                await response.json();
-
-
-            if (response.ok) {
-
-                answerBox.innerText =
-                    data.answer;
-            }
-            else {
-
-                answerBox.innerText =
-                    data.error ||
-                    "AI request failed.";
+            if (delays[attempt] > 0) {
+                await wait(delays[attempt]);
             }
 
-        }
-        catch (error) {
+            try {
 
-            answerBox.innerText =
-                "Could not connect to AI.";
-        }
-        finally {
+                const controller =
+                    new AbortController();
 
-            askButton.disabled = false;
+                const timeout =
+                    setTimeout(
+                        () => controller.abort(),
+                        8000
+                    );
 
-            askButton.innerText = "Ask AI";
+                const response =
+                    await fetch("/ask-ai", {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            question: question
+                        }),
+
+                        signal: controller.signal
+                    });
+
+                clearTimeout(timeout);
+
+                const data =
+                    await response.json();
+
+                if (
+                    response.ok &&
+                    data.answer
+                ) {
+
+                    answerBox.innerText =
+                        data.answer;
+
+                    askButton.disabled = false;
+
+                    askButton.innerText =
+                        "Ask AI";
+
+                    return;
+                }
+
+                console.log(
+                    "AI attempt failed:",
+                    attempt + 1
+                );
+
+            }
+            catch (error) {
+
+                console.log(
+                    "AI request error:",
+                    attempt + 1,
+                    error
+                );
+            }
         }
+
+        answerBox.innerText =
+            "AI is temporarily unavailable. Please try again.";
+
+        askButton.disabled = false;
+
+        askButton.innerText = "Ask AI";
     }
 
 
@@ -567,19 +610,11 @@
         "keydown",
         function(event) {
 
-            /*
-            AI input mein typing karte waqt
-            calculator keyboard shortcuts
-            activate nahi honge.
-            */
-
             if (
-                event.target.tagName === "INPUT" &&
                 event.target.id === "aiQuestion"
             ) {
                 return;
             }
-
 
             if (
                 event.key >= "0" &&
