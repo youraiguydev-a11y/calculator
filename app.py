@@ -9,30 +9,24 @@ client = genai.Client(
     api_key=os.environ.get("GEMINI_API_KEY")
 )
 
-
 @app.route("/")
 def home():
-    return "Gemini model checker is running."
-
+    return "Gemini checker is live"
 
 @app.route("/models")
 def models():
     try:
-        available_models = []
+        result = []
 
         for model in client.models.list():
-            if "generateContent" in model.supported_actions:
-                available_models.append(model.name)
+            result.append(model.name)
 
-        return jsonify({
-            "models": available_models
-        })
+        return jsonify(result)
 
     except Exception as error:
         return jsonify({
             "error": str(error)
         }), 500
-
 
 if __name__ == "__main__":
     app.run(debug=True)
