@@ -27,11 +27,11 @@ def ask_ai():
             }), 400
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.8-flash",
             contents=(
                 "You are a concise calculator and math assistant. "
                 "Answer accurately. Give the final answer first, "
-                "then a short explanation.\n\n"
+                "then a short and simple explanation.\n\n"
                 f"Question: {question}"
             )
         )
