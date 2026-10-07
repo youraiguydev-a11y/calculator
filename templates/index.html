@@ -45,7 +45,6 @@
             text-align: right;
             padding: 20px 10px;
             margin-bottom: 15px;
-            overflow: hidden;
         }
 
         .buttons {
@@ -63,7 +62,6 @@
             color: white;
             font-size: clamp(18px, 5vw, 25px);
             cursor: pointer;
-            transition: background 0.15s ease;
         }
 
         button:hover {
@@ -96,7 +94,6 @@
         @media (max-width: 420px) {
             body {
                 padding: 12px;
-                align-items: center;
             }
 
             .calculator {
@@ -108,29 +105,10 @@
             #display {
                 height: 90px;
                 margin-bottom: 12px;
-                padding: 15px 8px;
             }
 
             .buttons {
                 gap: 9px;
-            }
-
-            .zero {
-                padding-left: 22px;
-            }
-        }
-
-        @media (max-width: 340px) {
-            .calculator {
-                padding: 12px;
-            }
-
-            .buttons {
-                gap: 7px;
-            }
-
-            #display {
-                height: 80px;
             }
         }
     </style>
@@ -140,101 +118,136 @@
 
 <div class="calculator">
 
-    <form method="POST" id="calculatorForm">
+    <input
+        type="text"
+        id="display"
+        value=""
+        readonly
+    >
 
-        <input
-            type="text"
-            id="display"
-            name="display"
-            value="{{ result if result is not none else '' }}"
-            readonly
-        >
+    <div class="buttons">
 
-        <input type="hidden" name="num1" id="num1">
-        <input type="hidden" name="num2" id="num2">
-        <input type="hidden" name="choice" id="choice">
+        <button class="special" onclick="clearDisplay()">C</button>
+        <button class="special" onclick="deleteNumber()">⌫</button>
+        <button class="operator" onclick="addOperator('/')">÷</button>
+        <button class="operator" onclick="addOperator('*')">×</button>
 
-        <div class="buttons">
+        <button onclick="addNumber('7')">7</button>
+        <button onclick="addNumber('8')">8</button>
+        <button onclick="addNumber('9')">9</button>
+        <button class="operator" onclick="addOperator('-')">−</button>
 
-            <button type="button" class="special" onclick="clearDisplay()">C</button>
-            <button type="button" class="special" onclick="deleteNumber()">⌫</button>
-            <button type="button" class="operator" onclick="setOperator('/')">÷</button>
-            <button type="button" class="operator" onclick="setOperator('*')">×</button>
+        <button onclick="addNumber('4')">4</button>
+        <button onclick="addNumber('5')">5</button>
+        <button onclick="addNumber('6')">6</button>
+        <button class="operator" onclick="addOperator('+')">+</button>
 
-            <button type="button" onclick="addNumber('7')">7</button>
-            <button type="button" onclick="addNumber('8')">8</button>
-            <button type="button" onclick="addNumber('9')">9</button>
-            <button type="button" class="operator" onclick="setOperator('-')">−</button>
+        <button onclick="addNumber('1')">1</button>
+        <button onclick="addNumber('2')">2</button>
+        <button onclick="addNumber('3')">3</button>
 
-            <button type="button" onclick="addNumber('4')">4</button>
-            <button type="button" onclick="addNumber('5')">5</button>
-            <button type="button" onclick="addNumber('6')">6</button>
-            <button type="button" class="operator" onclick="setOperator('+')">+</button>
+        <button class="zero" onclick="addNumber('0')">0</button>
 
-            <button type="button" onclick="addNumber('1')">1</button>
-            <button type="button" onclick="addNumber('2')">2</button>
-            <button type="button" onclick="addNumber('3')">3</button>
+        <button class="equal" onclick="calculate()">=</button>
 
-            <button type="button" class="zero" onclick="addNumber('0')">0</button>
-
-            <button type="button" class="equal" onclick="prepareCalculation()">=</button>
-
-        </div>
-
-    </form>
+    </div>
 
 </div>
 
 <script>
-    let firstNumber = "";
-    let operator = "";
-    let currentNumber = "";
+    let expression = "";
+    let justCalculated = false;
 
     const display = document.getElementById("display");
 
-    function addNumber(number) {
-        currentNumber += number;
-        display.value = currentNumber;
+    function updateDisplay() {
+        display.value = expression
+            .replace(/\*/g, "×")
+            .replace(/\//g, "÷");
     }
 
-    function setOperator(op) {
-        if (currentNumber === "") {
+    function addNumber(number) {
+        if (justCalculated) {
+            expression = "";
+            justCalculated = false;
+        }
+
+        expression += number;
+        updateDisplay();
+    }
+
+    function addOperator(operator) {
+        if (expression === "") {
             return;
         }
 
-        firstNumber = currentNumber;
-        operator = op;
-        currentNumber = "";
+        justCalculated = false;
 
-        display.value = firstNumber + " " + op;
+        const lastCharacter = expression.slice(-1);
+
+        if ("+-*/".includes(lastCharacter)) {
+            expression = expression.slice(0, -1) + operator;
+        } else {
+            expression += operator;
+        }
+
+        updateDisplay();
     }
 
     function clearDisplay() {
-        firstNumber = "";
-        operator = "";
-        currentNumber = "";
+        expression = "";
+        justCalculated = false;
         display.value = "";
     }
 
     function deleteNumber() {
-        currentNumber = currentNumber.slice(0, -1);
-        display.value = currentNumber;
-    }
-
-    function prepareCalculation() {
-        if (
-            firstNumber === "" ||
-            currentNumber === "" ||
-            operator === ""
-        ) {
+        if (justCalculated) {
+            clearDisplay();
             return;
         }
 
-        document.getElementById("num1").value = firstNumber;
-        document.getElementById("num2").value = currentNumber;
-        document.getElementById("choice").value = operator;
+        expression = expression.slice(0, -1);
+        updateDisplay();
+    }
 
-        document.getElementById("calculatorForm").submit();
+    function calculate() {
+        if (expression === "") {
+            return;
+        }
+
+        const lastCharacter = expression.slice(-1);
+
+        if ("+-*/".includes(lastCharacter)) {
+            return;
+        }
+
+        try {
+            if (!/^[0-9+\-*/. ]+$/.test(expression)) {
+                throw new Error("Invalid expression");
+            }
+
+            let result = Function(
+                '"use strict"; return (' + expression + ')'
+            )();
+
+            if (!Number.isFinite(result)) {
+                display.value = "Error";
+                expression = "";
+                return;
+            }
+
+            result = Math.round((result + Number.EPSILON) * 10000000000)
+                     / 10000000000;
+
+            expression = result.toString();
+            display.value = expression;
+            justCalculated = true;
+
+        } catch (error) {
+            display.value = "Error";
+            expression = "";
+            justCalculated = false;
+        }
     }
 </script>
 
