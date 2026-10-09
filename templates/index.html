@@ -27,13 +27,76 @@
 
         .app-layout {
             width: 100%;
-            max-width: 1100px;
+            max-width: 1300px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+            grid-template-columns: 240px minmax(300px, 360px) minmax(0, 1fr);
             gap: 20px;
             align-items: start;
         }
+
+        /* CHAT HISTORY */
+
+        .history-panel {
+            background: #1c1c1c;
+            border-radius: 28px;
+            padding: 16px;
+            min-height: 560px;
+        }
+
+        .history-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        #newChatButton {
+            width: 100%;
+            border: none;
+            background: #ff9500;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        #chatHistory {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            width: 100%;
+            border: none;
+            text-align: left;
+            background: #333;
+            color: white;
+            padding: 11px;
+            border-radius: 9px;
+            cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .history-item:hover {
+            background: #444;
+        }
+
+        .history-item.active {
+            background: #555;
+        }
+
+        .empty-history {
+            color: #999;
+            font-size: 14px;
+            padding: 5px;
+        }
+
+        /* CALCULATOR */
 
         .calculator,
         .chat-panel {
@@ -98,6 +161,8 @@
             padding-left: 28px;
         }
 
+        /* CHAT */
+
         .chat-panel {
             background: #1c1c1c;
             border-radius: 28px;
@@ -137,6 +202,17 @@
             gap: 10px;
             margin-bottom: 15px;
             min-width: 0;
+        }
+
+        .new-chat-message {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+            padding: 40px 20px;
         }
 
         .message {
@@ -198,43 +274,55 @@
             cursor: not-allowed;
         }
 
-        @media (max-width: 900px) {
-            body {
-                padding: 16px;
+        /* TABLET */
+
+        @media (max-width: 1050px) {
+            .app-layout {
+                grid-template-columns: 200px minmax(280px, 330px) minmax(0, 1fr);
+                gap: 14px;
             }
 
-            .app-layout {
-                grid-template-columns: minmax(280px, 330px) minmax(0, 1fr);
-                gap: 16px;
+            body {
+                padding: 14px;
             }
 
             .calculator,
-            .chat-panel {
-                padding: 16px;
-            }
-
-            .buttons {
-                gap: 10px;
-            }
-
-            .calc-button {
-                font-size: 21px;
+            .chat-panel,
+            .history-panel {
+                padding: 15px;
             }
         }
 
-        @media (max-width: 720px) {
+        /* MOBILE */
+
+        @media (max-width: 800px) {
             body {
-                padding: 12px;
+                padding: 10px;
             }
 
             .app-layout {
                 grid-template-columns: 1fr;
                 max-width: 430px;
-                gap: 16px;
+                gap: 15px;
+            }
+
+            .calculator {
+                order: 1;
             }
 
             .chat-panel {
+                order: 2;
                 min-height: 420px;
+            }
+
+            .history-panel {
+                order: 3;
+                min-height: auto;
+            }
+
+            #chatHistory {
+                max-height: 180px;
+                overflow-y: auto;
             }
 
             #display {
@@ -261,7 +349,8 @@
             }
 
             .calculator,
-            .chat-panel {
+            .chat-panel,
+            .history-panel {
                 border-radius: 20px;
                 padding: 13px;
             }
@@ -318,6 +407,22 @@
 
 <div class="app-layout">
 
+    <!-- CHAT HISTORY -->
+
+    <div class="history-panel">
+
+        <div class="history-title">Chat History</div>
+
+        <button id="newChatButton">
+            + New Chat
+        </button>
+
+        <div id="chatHistory"></div>
+
+    </div>
+
+    <!-- CALCULATOR -->
+
     <div class="calculator">
 
         <input type="text" id="display" readonly value="0">
@@ -352,16 +457,23 @@
 
     </div>
 
+    <!-- AI CHAT -->
+
     <div class="chat-panel">
 
         <div class="chat-header">
-            <div class="chat-title">AI Chat</div>
+            <div class="chat-title" id="chatTitle">New Chat</div>
             <button id="clearChat">Clear Chat</button>
         </div>
 
-        <div id="chatMessages"></div>
+        <div id="chatMessages">
+            <div class="new-chat-message">
+                Start a new chat
+            </div>
+        </div>
 
         <div class="chat-input-row">
+
             <input
                 type="text"
                 id="aiQuestion"
@@ -371,6 +483,7 @@
             <button id="askButton" onclick="askAI()">
                 Send
             </button>
+
         </div>
 
     </div>
@@ -378,11 +491,13 @@
 </div>
 
 <script>
+
+    /* CALCULATOR */
+
     let expression = "";
     let justCalculated = false;
 
     const display = document.getElementById("display");
-    const chatMessages = document.getElementById("chatMessages");
 
     function updateDisplay() {
         if (expression === "") {
@@ -433,8 +548,7 @@
             justCalculated = false;
         }
 
-        const currentPart =
-            expression.split(/[+\-*/]/).pop();
+        const currentPart = expression.split(/[+\-*/]/).pop();
 
         if (currentPart.includes(".")) {
             return;
@@ -530,8 +644,8 @@
 
             result =
                 Math.round(
-                    (result + Number.EPSILON)
-                    * 10000000000
+                    (result + Number.EPSILON) *
+                    10000000000
                 ) / 10000000000;
 
             expression = result.toString();
@@ -545,52 +659,248 @@
         }
     }
 
-    function addMessage(text, type) {
-        const message = document.createElement("div");
+
+    /* CHAT HISTORY */
+
+    const chatMessages =
+        document.getElementById("chatMessages");
+
+    const chatHistory =
+        document.getElementById("chatHistory");
+
+    const chatTitle =
+        document.getElementById("chatTitle");
+
+    let currentChatId = null;
+
+    let chats = JSON.parse(
+        localStorage.getItem("calculatorChats") || "[]"
+    );
+
+
+    function generateChatId() {
+        return (
+            Date.now().toString() +
+            Math.random().toString(16).slice(2)
+        );
+    }
+
+
+    function saveChats() {
+        localStorage.setItem(
+            "calculatorChats",
+            JSON.stringify(chats)
+        );
+    }
+
+
+    function createNewChat(firstMessage) {
+
+        const chat = {
+            id: generateChatId(),
+
+            title:
+                firstMessage.length > 32
+                    ? firstMessage.slice(0, 32) + "..."
+                    : firstMessage,
+
+            messages: [],
+
+            createdAt: new Date().toISOString()
+        };
+
+        chats.unshift(chat);
+
+        currentChatId = chat.id;
+
+        saveChats();
+        renderHistory();
+
+        return chat;
+    }
+
+
+    function getCurrentChat() {
+        return chats.find(
+            chat => chat.id === currentChatId
+        );
+    }
+
+
+    function showNewChatScreen() {
+
+        currentChatId = null;
+
+        chatTitle.innerText = "New Chat";
+
+        chatMessages.innerHTML =
+            '<div class="new-chat-message">Start a new chat</div>';
+
+        document.getElementById("aiQuestion").value = "";
+
+        renderHistory();
+    }
+
+
+    function renderHistory() {
+
+        chatHistory.innerHTML = "";
+
+        if (chats.length === 0) {
+
+            const empty =
+                document.createElement("div");
+
+            empty.className = "empty-history";
+            empty.innerText = "No saved chats yet.";
+
+            chatHistory.appendChild(empty);
+
+            return;
+        }
+
+
+        chats.forEach(chat => {
+
+            const button =
+                document.createElement("button");
+
+            button.className = "history-item";
+
+            if (chat.id === currentChatId) {
+                button.classList.add("active");
+            }
+
+            button.innerText =
+                chat.title || "Untitled Chat";
+
+            button.addEventListener(
+                "click",
+                function () {
+                    loadSavedChat(chat.id);
+                }
+            );
+
+            chatHistory.appendChild(button);
+        });
+    }
+
+
+    function loadSavedChat(chatId) {
+
+        const chat =
+            chats.find(
+                item => item.id === chatId
+            );
+
+        if (!chat) return;
+
+        currentChatId = chat.id;
+
+        chatTitle.innerText =
+            chat.title || "AI Chat";
+
+        chatMessages.innerHTML = "";
+
+        chat.messages.forEach(item => {
+
+            displayMessage(
+                item.text,
+                item.type,
+                false
+            );
+        });
+
+        renderHistory();
+    }
+
+
+    function displayMessage(
+        text,
+        type,
+        shouldSave = true
+    ) {
+
+        const welcome =
+            chatMessages.querySelector(
+                ".new-chat-message"
+            );
+
+        if (welcome) {
+            welcome.remove();
+        }
+
+        const message =
+            document.createElement("div");
 
         message.className =
             "message " +
-            (type === "user"
-                ? "user-message"
-                : "ai-message");
+            (
+                type === "user"
+                    ? "user-message"
+                    : "ai-message"
+            );
 
         message.innerText = text;
 
         chatMessages.appendChild(message);
 
-        saveChat();
+
+        if (shouldSave) {
+
+            let chat = getCurrentChat();
+
+            if (!chat) {
+
+                chat = createNewChat(
+                    type === "user"
+                        ? text
+                        : "New Chat"
+                );
+            }
+
+            chat.messages.push({
+                text: text,
+                type: type
+            });
+
+            saveChats();
+            renderHistory();
+        }
+
 
         setTimeout(() => {
+
             message.scrollIntoView({
                 behavior: "smooth",
                 block: "end"
             });
+
         }, 100);
     }
 
-    function saveChat() {
-        localStorage.setItem(
-            "calculatorChat",
-            chatMessages.innerHTML
+
+    function addMessage(text, type) {
+        displayMessage(
+            text,
+            type,
+            true
         );
     }
 
-    function loadChat() {
-        const saved =
-            localStorage.getItem("calculatorChat");
-
-        if (saved) {
-            chatMessages.innerHTML = saved;
-        }
-    }
 
     function wait(ms) {
-        return new Promise(resolve =>
-            setTimeout(resolve, ms)
+        return new Promise(
+            resolve =>
+                setTimeout(resolve, ms)
         );
     }
 
+
+    /* AI REQUEST */
+
     async function askAI() {
+
         const questionInput =
             document.getElementById("aiQuestion");
 
@@ -602,6 +912,7 @@
 
         if (!question) return;
 
+
         addMessage(question, "user");
 
         questionInput.value = "";
@@ -610,6 +921,7 @@
         askButton.innerText = "Thinking...";
 
         const delays = [0, 800, 1500];
+
 
         for (
             let attempt = 0;
@@ -622,6 +934,7 @@
             }
 
             try {
+
                 const controller =
                     new AbortController();
 
@@ -633,26 +946,34 @@
 
                 const response =
                     await fetch("/ask-ai", {
+
                         method: "POST",
+
                         headers: {
                             "Content-Type":
                                 "application/json"
                         },
+
                         body: JSON.stringify({
                             question: question
                         }),
+
                         signal: controller.signal
                     });
 
+
                 clearTimeout(timeout);
+
 
                 const data =
                     await response.json();
+
 
                 if (
                     response.ok &&
                     data.answer
                 ) {
+
                     addMessage(
                         data.answer,
                         "ai"
@@ -665,12 +986,14 @@
                 }
 
             } catch (error) {
+
                 console.log(
                     "AI retry:",
                     attempt + 1
                 );
             }
         }
+
 
         addMessage(
             "AI is temporarily unavailable. Please try again.",
@@ -681,52 +1004,99 @@
         askButton.innerText = "Send";
     }
 
+
+    /* NEW CHAT */
+
     document
-        .getElementById("aiQuestion")
+        .getElementById("newChatButton")
         .addEventListener(
-            "keydown",
-            function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    askAI();
-                }
+            "click",
+            function () {
+
+                showNewChatScreen();
+
+                document
+                    .getElementById("aiQuestion")
+                    .focus();
             }
         );
+
+
+    /* CLEAR CURRENT CHAT */
 
     document
         .getElementById("clearChat")
         .addEventListener(
             "click",
-            function() {
-                chatMessages.innerHTML = "";
-                localStorage.removeItem(
-                    "calculatorChat"
+            function () {
+
+                if (!currentChatId) {
+
+                    showNewChatScreen();
+                    return;
+                }
+
+                chats = chats.filter(
+                    chat =>
+                        chat.id !== currentChatId
                 );
+
+                saveChats();
+
+                showNewChatScreen();
             }
         );
 
+
+    /* ENTER SEND */
+
+    document
+        .getElementById("aiQuestion")
+        .addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    askAI();
+                }
+            }
+        );
+
+
+    /* KEYBOARD CALCULATOR */
+
     document.addEventListener(
         "keydown",
-        function(event) {
+        function (event) {
 
-            if (event.target.id === "aiQuestion") {
+            if (
+                event.target.id === "aiQuestion"
+            ) {
                 return;
             }
+
 
             if (
                 event.key >= "0" &&
                 event.key <= "9"
             ) {
+
                 addNumber(event.key);
             }
 
             else if (
-                ["+", "-", "*", "/"].includes(event.key)
+                ["+", "-", "*", "/"]
+                    .includes(event.key)
             ) {
+
                 addOperator(event.key);
             }
 
             else if (event.key === ".") {
+
                 addDecimal();
             }
 
@@ -734,28 +1104,50 @@
                 event.key === "Enter" ||
                 event.key === "="
             ) {
+
                 event.preventDefault();
                 calculate();
             }
 
-            else if (event.key === "Backspace") {
+            else if (
+                event.key === "Backspace"
+            ) {
+
                 expression =
                     expression.slice(0, -1);
 
                 updateDisplay();
             }
 
-            else if (event.key === "Escape") {
+            else if (
+                event.key === "Escape"
+            ) {
+
                 clearCalculator();
             }
 
-            else if (event.key === "%") {
+            else if (
+                event.key === "%"
+            ) {
+
                 percentage();
             }
         }
     );
 
-    loadChat();
+
+    /* APP START */
+
+    renderHistory();
+
+    /* IMPORTANT:
+       Website dobara open ho
+       to hamesha fresh New Chat aaye.
+       Purani chats history mein save rahengi.
+    */
+
+    showNewChatScreen();
+
 </script>
 
 </body>
