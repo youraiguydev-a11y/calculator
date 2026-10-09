@@ -24,13 +24,12 @@
 
         body.light-mode {
             --bg: #f3f3f3;
-            --panel: #ffffff;
+            --panel: #fff;
             --secondary: #e8e8e8;
             --secondary-hover: #dcdcdc;
             --text: #111;
             --muted: #666;
             --border: #ddd;
-            --accent: #ff9500;
             --special: #d5d5d5;
             --special-text: #111;
         }
@@ -49,9 +48,6 @@
             color: var(--text);
             padding: 20px;
             overflow-x: hidden;
-            transition:
-                background 0.2s ease,
-                color 0.2s ease;
         }
 
         button,
@@ -59,10 +55,7 @@
             font-family: inherit;
         }
 
-        .mobile-topbar {
-            display: none;
-        }
-
+        .mobile-topbar,
         .sidebar-overlay {
             display: none;
         }
@@ -72,17 +65,12 @@
             max-width: 1380px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns:
-                250px
-                minmax(300px, 360px)
-                minmax(0, 1fr);
+            grid-template-columns: 250px minmax(300px, 360px) minmax(0, 1fr);
             gap: 20px;
             align-items: start;
         }
 
-        /* =========================
-           HISTORY SIDEBAR
-        ========================= */
+        /* HISTORY */
 
         .history-panel {
             background: var(--panel);
@@ -94,8 +82,8 @@
 
         .history-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             gap: 10px;
             margin-bottom: 12px;
         }
@@ -114,7 +102,6 @@
             height: 40px;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 18px;
         }
 
         #newChatButton {
@@ -123,27 +110,23 @@
             border: none;
             background: var(--accent);
             color: white;
-            padding: 12px;
             border-radius: 10px;
-            font-weight: bold;
             cursor: pointer;
+            font-weight: bold;
             margin-bottom: 10px;
-        }
-
-        .history-search {
-            margin-bottom: 12px;
         }
 
         #chatSearch {
             width: 100%;
             min-height: 42px;
             border: 1px solid var(--border);
-            outline: none;
             background: var(--secondary);
             color: var(--text);
             border-radius: 10px;
-            padding: 10px 11px;
+            padding: 10px;
             font-size: 14px;
+            outline: none;
+            margin-bottom: 12px;
         }
 
         #chatHistory {
@@ -156,26 +139,19 @@
             display: grid;
             grid-template-columns: minmax(0, 1fr) auto;
             gap: 6px;
-            align-items: center;
         }
 
         .history-item {
-            width: 100%;
             border: none;
-            text-align: left;
             background: var(--secondary);
             color: var(--text);
             padding: 11px;
             border-radius: 9px;
             cursor: pointer;
+            text-align: left;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            min-height: 42px;
-        }
-
-        .history-item:hover {
-            background: var(--secondary-hover);
         }
 
         .history-item.active {
@@ -184,7 +160,6 @@
 
         .history-menu-button {
             width: 38px;
-            height: 38px;
             border: none;
             background: var(--secondary);
             color: var(--text);
@@ -197,7 +172,6 @@
             grid-column: 1 / -1;
             display: none;
             gap: 6px;
-            padding-bottom: 3px;
         }
 
         .history-actions.show {
@@ -209,14 +183,9 @@
             border: none;
             background: var(--secondary);
             color: var(--text);
-            min-height: 36px;
+            padding: 8px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
-        }
-
-        .small-action:hover {
-            background: var(--secondary-hover);
         }
 
         .delete-action {
@@ -226,18 +195,9 @@
         .empty-history {
             color: var(--muted);
             font-size: 14px;
-            padding: 5px;
         }
 
-        /* =========================
-           CALCULATOR
-        ========================= */
-
-        .calculator,
-        .chat-panel {
-            width: 100%;
-            min-width: 0;
-        }
+        /* CALCULATOR */
 
         .calculator {
             background: var(--panel);
@@ -255,10 +215,7 @@
             color: var(--text);
             text-align: right;
             font-size: 42px;
-            padding: 15px 5px;
             margin-bottom: 10px;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         #askResultButton {
@@ -273,19 +230,13 @@
             font-weight: bold;
         }
 
-        #askResultButton:hover {
-            background: var(--secondary-hover);
-        }
-
         .buttons {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
 
         .calc-button {
-            width: 100%;
-            min-width: 0;
             aspect-ratio: 1;
             border: none;
             border-radius: 50%;
@@ -314,9 +265,7 @@
             padding-left: 28px;
         }
 
-        /* =========================
-           CHAT
-        ========================= */
+        /* CHAT */
 
         .chat-panel {
             background: var(--panel);
@@ -331,21 +280,13 @@
         .chat-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
             gap: 10px;
             margin-bottom: 15px;
-        }
-
-        .chat-title-wrap {
-            min-width: 0;
         }
 
         .chat-title {
             font-size: 20px;
             font-weight: bold;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .memory-status {
@@ -356,9 +297,9 @@
 
         .chat-header-buttons {
             display: flex;
+            gap: 7px;
             flex-wrap: wrap;
             justify-content: flex-end;
-            gap: 7px;
         }
 
         .header-button {
@@ -368,11 +309,6 @@
             padding: 9px 11px;
             border-radius: 8px;
             cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .header-button:hover {
-            background: var(--secondary-hover);
         }
 
         #chatMessages {
@@ -381,18 +317,14 @@
             flex-direction: column;
             gap: 12px;
             margin-bottom: 15px;
-            min-width: 0;
         }
 
         .new-chat-message {
             flex: 1;
             display: flex;
-            align-items: center;
             justify-content: center;
-            text-align: center;
+            align-items: center;
             color: var(--muted);
-            font-size: 18px;
-            padding: 40px 20px;
         }
 
         .message-wrapper {
@@ -408,7 +340,6 @@
 
         .message-wrapper.ai {
             align-self: flex-start;
-            align-items: flex-start;
         }
 
         .message {
@@ -417,7 +348,6 @@
             line-height: 1.45;
             white-space: pre-wrap;
             overflow-wrap: anywhere;
-            word-break: break-word;
         }
 
         .user-message {
@@ -434,55 +364,43 @@
 
         .message-actions {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             margin-top: 5px;
-            flex-wrap: wrap;
         }
 
         .message-action {
-            border: none;
             background: transparent;
+            border: none;
             color: var(--muted);
-            padding: 4px 6px;
             cursor: pointer;
-            border-radius: 6px;
             font-size: 12px;
         }
 
-        .message-action:hover {
-            background: var(--secondary);
-            color: var(--text);
-        }
-
         .typing-indicator {
-            display: inline-flex;
+            display: flex;
             gap: 4px;
-            align-items: center;
-            min-height: 20px;
         }
 
         .typing-dot {
             width: 6px;
             height: 6px;
-            border-radius: 50%;
             background: var(--muted);
-            animation: typingBounce 1.1s infinite ease-in-out;
+            border-radius: 50%;
+            animation: typing 1s infinite;
         }
 
         .typing-dot:nth-child(2) {
-            animation-delay: 0.15s;
+            animation-delay: .15s;
         }
 
         .typing-dot:nth-child(3) {
-            animation-delay: 0.3s;
+            animation-delay: .3s;
         }
 
-        @keyframes typingBounce {
-            0%,
-            60%,
-            100% {
+        @keyframes typing {
+            0%, 60%, 100% {
                 transform: translateY(0);
-                opacity: 0.4;
+                opacity: .4;
             }
 
             30% {
@@ -494,13 +412,11 @@
         .chat-input-row {
             display: flex;
             gap: 10px;
-            width: 100%;
         }
 
         #aiQuestion {
             flex: 1;
             min-width: 0;
-            width: 100%;
             padding: 13px;
             border: 1px solid var(--border);
             outline: none;
@@ -511,50 +427,20 @@
         }
 
         #askButton {
-            flex-shrink: 0;
-            padding: 13px 18px;
             border: none;
             border-radius: 10px;
             background: var(--accent);
             color: white;
             font-weight: bold;
+            padding: 13px 18px;
             cursor: pointer;
         }
 
         #askButton:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+            opacity: .6;
         }
 
-        /* =========================
-           TABLET
-        ========================= */
-
-        @media (max-width: 1100px) {
-
-            .app-layout {
-                grid-template-columns:
-                    210px
-                    minmax(280px, 330px)
-                    minmax(0, 1fr);
-
-                gap: 14px;
-            }
-
-            body {
-                padding: 14px;
-            }
-
-            .calculator,
-            .chat-panel,
-            .history-panel {
-                padding: 15px;
-            }
-        }
-
-        /* =========================
-           MOBILE
-        ========================= */
+        /* MOBILE */
 
         @media (max-width: 800px) {
 
@@ -563,47 +449,27 @@
             }
 
             .mobile-topbar {
-                width: 100%;
                 max-width: 430px;
-                margin: 0 auto 12px auto;
+                margin: 0 auto 12px;
                 display: flex;
-                align-items: center;
                 justify-content: space-between;
-                gap: 10px;
+                align-items: center;
             }
 
-            #openSidebar {
-                border: none;
-                background: var(--panel);
-                color: var(--text);
-                width: 46px;
-                height: 46px;
-                border-radius: 12px;
-                font-size: 22px;
-                cursor: pointer;
-                border: 1px solid var(--border);
-            }
-
-            .mobile-title {
-                font-size: 18px;
-                font-weight: bold;
-            }
-
+            #openSidebar,
             #mobileThemeButton {
-                border: none;
-                background: var(--panel);
-                color: var(--text);
                 width: 46px;
                 height: 46px;
+                background: var(--panel);
+                color: var(--text);
+                border: 1px solid var(--border);
                 border-radius: 12px;
                 cursor: pointer;
-                border: 1px solid var(--border);
             }
 
             .app-layout {
                 grid-template-columns: 1fr;
                 max-width: 430px;
-                gap: 15px;
             }
 
             .calculator {
@@ -612,7 +478,6 @@
 
             .chat-panel {
                 order: 2;
-                min-height: 430px;
             }
 
             .history-panel {
@@ -621,12 +486,11 @@
                 left: 0;
                 width: min(320px, 86vw);
                 height: 100%;
-                min-height: 100%;
                 z-index: 1001;
                 border-radius: 0 22px 22px 0;
-                overflow-y: auto;
                 transform: translateX(-105%);
-                transition: transform 0.25s ease;
+                transition: .25s;
+                overflow-y: auto;
             }
 
             .history-panel.open {
@@ -641,104 +505,23 @@
                 display: block;
                 position: fixed;
                 inset: 0;
-                background: rgba(0, 0, 0, 0.55);
+                background: rgba(0,0,0,.55);
                 z-index: 1000;
                 opacity: 0;
                 visibility: hidden;
-                pointer-events: none;
-                transition: opacity 0.25s ease;
             }
 
             .sidebar-overlay.show {
                 opacity: 1;
                 visibility: visible;
-                pointer-events: auto;
             }
 
             #desktopThemeButton {
                 display: none;
             }
 
-            #display {
-                height: 85px;
-                font-size: 36px;
-            }
-
-            .buttons {
-                gap: 9px;
-            }
-
-            .calc-button {
-                font-size: 20px;
-            }
-
             .message-wrapper {
-                max-width: 92%;
-            }
-
-            .chat-header-buttons {
-                max-width: 48%;
-            }
-        }
-
-        @media (max-width: 420px) {
-
-            body {
-                padding: 8px;
-            }
-
-            .calculator,
-            .chat-panel {
-                border-radius: 20px;
-                padding: 13px;
-            }
-
-            #display {
-                height: 75px;
-                font-size: 31px;
-                margin-bottom: 8px;
-            }
-
-            .buttons {
-                gap: 7px;
-            }
-
-            .calc-button {
-                font-size: 18px;
-            }
-
-            .zero {
-                padding-left: 22px;
-            }
-
-            .chat-title {
-                font-size: 18px;
-            }
-
-            .header-button {
-                font-size: 11px;
-                padding: 8px 8px;
-            }
-
-            .chat-input-row {
-                gap: 7px;
-            }
-
-            #aiQuestion {
-                padding: 12px 10px;
-                font-size: 16px;
-            }
-
-            #askButton {
-                padding: 12px 13px;
-            }
-
-            .message-wrapper {
-                max-width: 95%;
-            }
-
-            .message {
-                font-size: 14px;
+                max-width: 94%;
             }
         }
     </style>
@@ -746,42 +529,24 @@
 
 <body>
 
-<!-- =========================
-     MOBILE HEADER
-========================= -->
-
 <div class="mobile-topbar">
 
-    <button id="openSidebar">
-        ☰
-    </button>
+    <button id="openSidebar">☰</button>
 
-    <div class="mobile-title">
-        AI Calculator
-    </div>
+    <strong>AI Calculator</strong>
 
-    <button
-        id="mobileThemeButton"
-        title="Change theme"
-    >
-        ☀
-    </button>
+    <button id="mobileThemeButton">☀</button>
 
 </div>
-
 
 <div
     class="sidebar-overlay"
     id="sidebarOverlay"
 ></div>
 
-
 <div class="app-layout">
 
-
-    <!-- =========================
-         CHAT HISTORY
-    ========================= -->
+    <!-- HISTORY -->
 
     <div
         class="history-panel"
@@ -800,200 +565,74 @@
 
         </div>
 
-
         <button id="newChatButton">
             + New Chat
         </button>
 
-
-        <div class="history-search">
-
-            <input
-                type="text"
-                id="chatSearch"
-                placeholder="Search chats..."
-            >
-
-        </div>
-
+        <input
+            type="text"
+            id="chatSearch"
+            placeholder="Search chats..."
+        >
 
         <div id="chatHistory"></div>
 
     </div>
 
 
-    <!-- =========================
-         CALCULATOR
-    ========================= -->
+    <!-- CALCULATOR -->
 
     <div class="calculator">
 
         <input
             type="text"
             id="display"
-            readonly
             value="0"
+            readonly
         >
-
 
         <button id="askResultButton">
             Ask AI about result
         </button>
 
-
         <div class="buttons">
 
-            <button
-                class="calc-button special"
-                onclick="clearCalculator()"
-            >
-                AC
-            </button>
+            <button class="calc-button special" onclick="clearCalculator()">AC</button>
+            <button class="calc-button special" onclick="toggleSign()">+/-</button>
+            <button class="calc-button special" onclick="percentage()">%</button>
+            <button class="calc-button operator" onclick="addOperator('/')">÷</button>
 
-            <button
-                class="calc-button special"
-                onclick="toggleSign()"
-            >
-                +/-
-            </button>
+            <button class="calc-button" onclick="addNumber('7')">7</button>
+            <button class="calc-button" onclick="addNumber('8')">8</button>
+            <button class="calc-button" onclick="addNumber('9')">9</button>
+            <button class="calc-button operator" onclick="addOperator('*')">×</button>
 
-            <button
-                class="calc-button special"
-                onclick="percentage()"
-            >
-                %
-            </button>
+            <button class="calc-button" onclick="addNumber('4')">4</button>
+            <button class="calc-button" onclick="addNumber('5')">5</button>
+            <button class="calc-button" onclick="addNumber('6')">6</button>
+            <button class="calc-button operator" onclick="addOperator('-')">−</button>
 
-            <button
-                class="calc-button operator"
-                onclick="addOperator('/')"
-            >
-                ÷
-            </button>
+            <button class="calc-button" onclick="addNumber('1')">1</button>
+            <button class="calc-button" onclick="addNumber('2')">2</button>
+            <button class="calc-button" onclick="addNumber('3')">3</button>
+            <button class="calc-button operator" onclick="addOperator('+')">+</button>
 
-
-            <button
-                class="calc-button"
-                onclick="addNumber('7')"
-            >
-                7
-            </button>
-
-            <button
-                class="calc-button"
-                onclick="addNumber('8')"
-            >
-                8
-            </button>
-
-            <button
-                class="calc-button"
-                onclick="addNumber('9')"
-            >
-                9
-            </button>
-
-            <button
-                class="calc-button operator"
-                onclick="addOperator('*')"
-            >
-                ×
-            </button>
-
-
-            <button
-                class="calc-button"
-                onclick="addNumber('4')"
-            >
-                4
-            </button>
-
-            <button
-                class="calc-button"
-                onclick="addNumber('5')"
-            >
-                5
-            </button>
-
-            <button
-                class="calc-button"
-                onclick="addNumber('6')"
-            >
-                6
-            </button>
-
-            <button
-                class="calc-button operator"
-                onclick="addOperator('-')"
-            >
-                −
-            </button>
-
-
-            <button
-                class="calc-button"
-                onclick="addNumber('1')"
-            >
-                1
-            </button>
-
-            <button
-                class="calc-button"
-                onclick="addNumber('2')"
-            >
-                2
-            </button>
-
-            <button
-                class="calc-button"
-                onclick="addNumber('3')"
-            >
-                3
-            </button>
-
-            <button
-                class="calc-button operator"
-                onclick="addOperator('+')"
-            >
-                +
-            </button>
-
-
-            <button
-                class="calc-button zero"
-                onclick="addNumber('0')"
-            >
-                0
-            </button>
-
-            <button
-                class="calc-button"
-                onclick="addDecimal()"
-            >
-                .
-            </button>
-
-            <button
-                class="calc-button equal"
-                onclick="calculate()"
-            >
-                =
-            </button>
+            <button class="calc-button zero" onclick="addNumber('0')">0</button>
+            <button class="calc-button" onclick="addDecimal()">.</button>
+            <button class="calc-button equal" onclick="calculate()">=</button>
 
         </div>
 
     </div>
 
 
-    <!-- =========================
-         AI CHAT
-    ========================= -->
+    <!-- CHAT -->
 
     <div class="chat-panel">
 
         <div class="chat-header">
 
-            <div class="chat-title-wrap">
+            <div>
 
                 <div
                     class="chat-title"
@@ -1007,7 +646,6 @@
                 </div>
 
             </div>
-
 
             <div class="chat-header-buttons">
 
@@ -1036,7 +674,6 @@
 
         </div>
 
-
         <div id="chatMessages">
 
             <div class="new-chat-message">
@@ -1044,7 +681,6 @@
             </div>
 
         </div>
-
 
         <div class="chat-input-row">
 
@@ -1070,123 +706,70 @@
 
 <script>
 
-    /* =====================================================
+    /* ==============================
        CALCULATOR
-    ===================================================== */
+    ============================== */
 
     let expression = "";
-
     let justCalculated = false;
-
     let latestCalculatorResult = null;
 
-
     const display =
-        document.getElementById(
-            "display"
-        );
+        document.getElementById("display");
 
 
     function updateDisplay() {
 
-        if (
-            expression === ""
-        ) {
-
-            display.value = "0";
-
-            return;
-        }
-
-
         display.value =
-            expression
-                .replace(
-                    /\*/g,
-                    "×"
-                )
-                .replace(
-                    /\//g,
-                    "÷"
-                );
+            expression === ""
+                ? "0"
+                : expression
+                    .replace(/\*/g, "×")
+                    .replace(/\//g, "÷");
     }
 
 
-    function addNumber(
-        number
-    ) {
+    function addNumber(number) {
 
-        if (
-            justCalculated
-        ) {
-
+        if (justCalculated) {
             expression = "";
-
             justCalculated = false;
         }
 
-
         expression += number;
 
-
-        latestCalculatorResult =
-            null;
-
+        latestCalculatorResult = null;
 
         updateDisplay();
     }
 
 
-    function addOperator(
-        operator
-    ) {
+    function addOperator(operator) {
 
-        if (
-            expression === ""
-        ) {
+        if (expression === "") {
 
-            if (
-                operator === "-"
-            ) {
-
+            if (operator === "-") {
                 expression = "-";
-
                 updateDisplay();
             }
 
             return;
         }
 
-
-        justCalculated = false;
-
-        latestCalculatorResult =
-            null;
-
-
-        const lastCharacter =
+        const last =
             expression.slice(-1);
 
-
-        if (
-            "+-*/".includes(
-                lastCharacter
-            )
-        ) {
-
+        if ("+-*/".includes(last)) {
             expression =
-                expression.slice(
-                    0,
-                    -1
-                )
+                expression.slice(0, -1)
                 +
                 operator;
-
         } else {
-
             expression += operator;
         }
 
+        justCalculated = false;
+        latestCalculatorResult = null;
 
         updateDisplay();
     }
@@ -1194,55 +777,31 @@
 
     function addDecimal() {
 
-        if (
-            justCalculated
-        ) {
-
+        if (justCalculated) {
             expression = "";
-
             justCalculated = false;
         }
 
-
-        const currentPart =
+        const current =
             expression
-                .split(
-                    /[+\-*/]/
-                )
+                .split(/[+\-*/]/)
                 .pop();
 
-
-        if (
-            currentPart.includes(
-                "."
-            )
-        ) {
-
+        if (current.includes(".")) {
             return;
         }
-
 
         if (
             expression === ""
             ||
             "+-*/".includes(
-                expression.slice(
-                    -1
-                )
+                expression.slice(-1)
             )
         ) {
-
             expression += "0.";
-
         } else {
-
             expression += ".";
         }
-
-
-        latestCalculatorResult =
-            null;
-
 
         updateDisplay();
     }
@@ -1251,81 +810,43 @@
     function clearCalculator() {
 
         expression = "";
-
         justCalculated = false;
+        latestCalculatorResult = null;
 
-        latestCalculatorResult =
-            null;
-
-        display.value = "0";
+        updateDisplay();
     }
 
 
     function toggleSign() {
 
-        if (
-            expression === ""
-        ) {
-
-            return;
-        }
-
+        if (!expression) return;
 
         const match =
             expression.match(
                 /(-?\d*\.?\d+)$/
             );
 
+        if (!match) return;
 
-        if (
-            !match
-        ) {
-
-            return;
-        }
-
-
-        const number =
-            match[0];
-
+        const number = match[0];
 
         const start =
             expression.length
             -
             number.length;
 
-
-        if (
-            number.startsWith(
-                "-"
-            )
-        ) {
-
-            expression =
-                expression.slice(
-                    0,
-                    start
-                )
+        expression =
+            number.startsWith("-")
+                ?
+                expression.slice(0, start)
                 +
-                number.slice(1);
-
-        } else {
-
-            expression =
-                expression.slice(
-                    0,
-                    start
-                )
+                number.slice(1)
+                :
+                expression.slice(0, start)
                 +
                 "-"
                 +
                 number;
-        }
-
-
-        latestCalculatorResult =
-            null;
-
 
         updateDisplay();
     }
@@ -1333,41 +854,19 @@
 
     function percentage() {
 
-        if (
-            expression === ""
-        ) {
-
-            return;
-        }
-
+        if (!expression) return;
 
         const match =
             expression.match(
                 /(-?\d*\.?\d+)$/
             );
 
-
-        if (
-            !match
-        ) {
-
-            return;
-        }
-
+        if (!match) return;
 
         const number =
-            parseFloat(
-                match[0]
-            );
+            parseFloat(match[0]);
 
-
-        if (
-            isNaN(number)
-        ) {
-
-            return;
-        }
-
+        if (isNaN(number)) return;
 
         expression =
             expression.slice(
@@ -1377,14 +876,7 @@
                 match[0].length
             )
             +
-            (
-                number / 100
-            );
-
-
-        latestCalculatorResult =
-            null;
-
+            (number / 100);
 
         updateDisplay();
     }
@@ -1392,44 +884,27 @@
 
     function calculate() {
 
-        if (
-            expression === ""
-        ) {
-
-            return;
-        }
-
-
-        const originalExpression =
-            expression;
-
-
-        const lastCharacter =
-            expression.slice(-1);
-
+        if (!expression) return;
 
         if (
             "+-*/".includes(
-                lastCharacter
+                expression.slice(-1)
             )
         ) {
-
             return;
         }
 
+        const original =
+            expression;
 
         try {
 
             if (
                 !/^[0-9+\-*/. ]+$/
-                    .test(
-                        expression
-                    )
+                    .test(expression)
             ) {
-
                 throw new Error();
             }
-
 
             let result =
                 Function(
@@ -1440,60 +915,38 @@
                     ')'
                 )();
 
-
-            if (
-                !Number.isFinite(
-                    result
-                )
-            ) {
+            if (!Number.isFinite(result)) {
 
                 display.value =
                     "Cannot divide by zero";
 
                 expression = "";
 
-                latestCalculatorResult =
-                    null;
-
                 return;
             }
 
-
             result =
                 Math.round(
-                    (
-                        result
-                        +
-                        Number.EPSILON
-                    )
+                    (result + Number.EPSILON)
                     *
                     10000000000
                 )
                 /
                 10000000000;
 
-
             latestCalculatorResult = {
-
-                expression:
-                    originalExpression,
-
-                result:
-                    result
+                expression: original,
+                result: result
             };
-
 
             expression =
                 result.toString();
 
-
             display.value =
                 expression;
 
-
             justCalculated =
                 true;
-
 
         } catch {
 
@@ -1502,9 +955,6 @@
 
             expression = "";
 
-            latestCalculatorResult =
-                null;
-
             justCalculated =
                 false;
         }
@@ -1512,37 +962,31 @@
 
 
 
-    /* =====================================================
+    /* ==============================
        CHAT DATA
-    ===================================================== */
+    ============================== */
 
     const chatMessages =
         document.getElementById(
             "chatMessages"
         );
 
-
     const chatHistory =
         document.getElementById(
             "chatHistory"
         );
-
 
     const chatTitle =
         document.getElementById(
             "chatTitle"
         );
 
-
     const chatSearch =
         document.getElementById(
             "chatSearch"
         );
 
-
-    let currentChatId =
-        null;
-
+    let currentChatId = null;
 
     let chats =
         JSON.parse(
@@ -1557,8 +1001,7 @@
     function generateChatId() {
 
         return (
-            Date.now()
-                .toString()
+            Date.now().toString()
             +
             Math.random()
                 .toString(16)
@@ -1571,128 +1014,27 @@
 
         localStorage.setItem(
             "calculatorChats",
-            JSON.stringify(
-                chats
-            )
+            JSON.stringify(chats)
         );
     }
 
 
-
-    /* =====================================================
-       CLEAN AUTOMATIC TITLES
-    ===================================================== */
-
-    function createSmartTitle(
-        text
-    ) {
+    function createSmartTitle(text) {
 
         let title =
             text
                 .trim()
-                .replace(
-                    /\s+/g,
-                    " "
-                );
+                .replace(/\s+/g, " ");
 
-
-        const lower =
-            title.toLowerCase();
-
-
-        if (
-            lower.includes(
-                "redis"
-            )
-        ) {
-
-            return "Redis Discussion";
-        }
-
-
-        if (
-            lower.includes(
-                "python"
-            )
-        ) {
-
-            return "Python Help";
-        }
-
-
-        if (
-            lower.includes(
-                "javascript"
-            )
-            ||
-            lower.includes(
-                " js "
-            )
-        ) {
-
-            return "JavaScript Help";
-        }
-
-
-        if (
-            lower.includes(
-                "ai agent"
-            )
-        ) {
-
-            return "AI Agent";
-        }
-
-
-        if (
-            lower.includes(
-                "calculator"
-            )
-        ) {
-
-            return "Calculator Help";
-        }
-
-
-        if (
-            lower.includes(
-                "upwork"
-            )
-        ) {
-
-            return "Upwork";
-        }
-
-
-        title =
-            title
-                .replace(
-                    /[?!.]+$/g,
-                    ""
-                );
-
-
-        if (
-            title.length > 34
-        ) {
-
+        if (title.length > 34) {
             title =
-                title.slice(
-                    0,
-                    34
-                )
+                title.slice(0, 34)
                 +
                 "...";
         }
 
-
-        return (
-            title
-            ||
-            "New Chat"
-        );
+        return title || "New Chat";
     }
-
 
 
     function createNewChat(
@@ -1716,20 +1058,14 @@
                     .toISOString()
         };
 
-
-        chats.unshift(
-            chat
-        );
-
+        chats.unshift(chat);
 
         currentChatId =
             chat.id;
 
-
         saveChats();
 
         renderHistory();
-
 
         return chat;
     }
@@ -1746,24 +1082,16 @@
     }
 
 
-
-    /* =====================================================
-       NEW CHAT SCREEN
-    ===================================================== */
-
     function showNewChatScreen() {
 
         currentChatId =
             null;
 
-
         chatTitle.innerText =
             "New Chat";
 
-
         chatMessages.innerHTML =
             '<div class="new-chat-message">Start a new chat</div>';
-
 
         document
             .getElementById(
@@ -1771,77 +1099,49 @@
             )
             .value = "";
 
-
         renderHistory();
     }
 
 
 
-    /* =====================================================
-       CHAT HISTORY
-    ===================================================== */
+    /* ==============================
+       HISTORY
+    ============================== */
 
     function renderHistory() {
 
         chatHistory.innerHTML =
             "";
 
-
-        const searchTerm =
+        const term =
             chatSearch.value
                 .trim()
                 .toLowerCase();
 
+        const filtered =
+            chats.filter(chat => {
 
-        const filteredChats =
-            chats.filter(
-                chat => {
-
-                    if (
-                        !searchTerm
-                    ) {
-
-                        return true;
-                    }
-
-
-                    const titleMatch =
-                        (
-                            chat.title
-                            ||
-                            ""
-                        )
-                            .toLowerCase()
-                            .includes(
-                                searchTerm
-                            );
-
-
-                    const messageMatch =
-                        chat.messages
-                            .some(
-                                item =>
-                                    item.text
-                                        .toLowerCase()
-                                        .includes(
-                                            searchTerm
-                                        )
-                            );
-
-
-                    return (
-                        titleMatch
-                        ||
-                        messageMatch
-                    );
+                if (!term) {
+                    return true;
                 }
-            );
+
+                return (
+                    chat.title
+                        .toLowerCase()
+                        .includes(term)
+                    ||
+                    chat.messages.some(
+                        item =>
+                            item.text
+                                .toLowerCase()
+                                .includes(term)
+                    )
+                );
+            });
 
 
         if (
-            filteredChats.length
-            ===
-            0
+            filtered.length === 0
         ) {
 
             const empty =
@@ -1849,286 +1149,185 @@
                     "div"
                 );
 
-
             empty.className =
                 "empty-history";
 
-
             empty.innerText =
-                searchTerm
+                term
                     ?
                     "No matching chats."
                     :
                     "No saved chats yet.";
 
-
-            chatHistory
-                .appendChild(
-                    empty
-                );
-
+            chatHistory.appendChild(
+                empty
+            );
 
             return;
         }
 
 
-        filteredChats.forEach(
-            chat => {
+        filtered.forEach(chat => {
 
-                const row =
-                    document.createElement(
-                        "div"
-                    );
+            const row =
+                document.createElement(
+                    "div"
+                );
 
-
-                row.className =
-                    "history-row";
+            row.className =
+                "history-row";
 
 
-                const button =
-                    document.createElement(
-                        "button"
-                    );
+            const button =
+                document.createElement(
+                    "button"
+                );
 
+            button.className =
+                "history-item";
 
-                button.className =
-                    "history-item";
-
-
-                if (
-                    chat.id
-                    ===
-                    currentChatId
-                ) {
-
-                    button
-                        .classList
-                        .add(
-                            "active"
-                        );
-                }
-
-
-                button.innerText =
-                    chat.title
-                    ||
-                    "Untitled Chat";
-
-
-                button.title =
-                    chat.title;
-
-
+            if (
+                chat.id
+                ===
+                currentChatId
+            ) {
                 button
-                    .addEventListener(
-                        "click",
-                        function () {
-
-                            loadSavedChat(
-                                chat.id
-                            );
-
-                            closeMobileSidebar();
-                        }
-                    );
-
-
-                const menuButton =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                menuButton.className =
-                    "history-menu-button";
-
-
-                menuButton.innerText =
-                    "⋯";
-
-
-                const actions =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                actions.className =
-                    "history-actions";
-
-
-                const rename =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                rename.className =
-                    "small-action";
-
-
-                rename.innerText =
-                    "Rename";
-
-
-                rename
-                    .addEventListener(
-                        "click",
-                        function () {
-
-                            renameChat(
-                                chat.id
-                            );
-                        }
-                    );
-
-
-                const deleteButton =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                deleteButton.className =
-                    "small-action delete-action";
-
-
-                deleteButton.innerText =
-                    "Delete";
-
-
-                deleteButton
-                    .addEventListener(
-                        "click",
-                        function () {
-
-                            deleteChat(
-                                chat.id
-                            );
-                        }
-                    );
-
-
-                menuButton
-                    .addEventListener(
-                        "click",
-                        function () {
-
-                            actions
-                                .classList
-                                .toggle(
-                                    "show"
-                                );
-                        }
-                    );
-
-
-                actions
-                    .appendChild(
-                        rename
-                    );
-
-
-                actions
-                    .appendChild(
-                        deleteButton
-                    );
-
-
-                row.appendChild(
-                    button
-                );
-
-
-                row.appendChild(
-                    menuButton
-                );
-
-
-                row.appendChild(
-                    actions
-                );
-
-
-                chatHistory
-                    .appendChild(
-                        row
-                    );
+                    .classList
+                    .add("active");
             }
-        );
-    }
 
+            button.innerText =
+                chat.title;
 
+            button.addEventListener(
+                "click",
+                () => {
 
-    /* =====================================================
-       RENAME CHAT
-    ===================================================== */
+                    loadSavedChat(
+                        chat.id
+                    );
 
-    function renameChat(
-        chatId
-    ) {
-
-        const chat =
-            chats.find(
-                item =>
-                    item.id
-                    ===
-                    chatId
+                    closeMobileSidebar();
+                }
             );
 
 
-        if (
-            !chat
-        ) {
+            const menu =
+                document.createElement(
+                    "button"
+                );
 
-            return;
-        }
+            menu.className =
+                "history-menu-button";
+
+            menu.innerText = "⋯";
 
 
-        const newName =
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+            actions.className =
+                "history-actions";
+
+
+            const rename =
+                document.createElement(
+                    "button"
+                );
+
+            rename.className =
+                "small-action";
+
+            rename.innerText =
+                "Rename";
+
+            rename.onclick =
+                () =>
+                    renameChat(
+                        chat.id
+                    );
+
+
+            const del =
+                document.createElement(
+                    "button"
+                );
+
+            del.className =
+                "small-action delete-action";
+
+            del.innerText =
+                "Delete";
+
+            del.onclick =
+                () =>
+                    deleteChat(
+                        chat.id
+                    );
+
+
+            menu.onclick =
+                () =>
+                    actions
+                        .classList
+                        .toggle(
+                            "show"
+                        );
+
+
+            actions.append(
+                rename,
+                del
+            );
+
+            row.append(
+                button,
+                menu,
+                actions
+            );
+
+            chatHistory.appendChild(
+                row
+            );
+        });
+    }
+
+
+    function renameChat(id) {
+
+        const chat =
+            chats.find(
+                c => c.id === id
+            );
+
+        if (!chat) return;
+
+        const name =
             prompt(
                 "Enter new chat name:",
                 chat.title
             );
 
-
         if (
-            newName === null
+            name === null
+            ||
+            !name.trim()
         ) {
-
             return;
         }
-
-
-        const cleanName =
-            newName.trim();
-
-
-        if (
-            !cleanName
-        ) {
-
-            return;
-        }
-
 
         chat.title =
-            cleanName.slice(
-                0,
-                50
-            );
-
+            name.trim()
+                .slice(0, 50);
 
         if (
-            currentChatId
-            ===
-            chat.id
+            currentChatId === id
         ) {
-
             chatTitle.innerText =
                 chat.title;
         }
-
 
         saveChats();
 
@@ -2136,160 +1335,93 @@
     }
 
 
-
-    /* =====================================================
-       DELETE INDIVIDUAL CHAT
-    ===================================================== */
-
-    function deleteChat(
-        chatId
-    ) {
+    function deleteChat(id) {
 
         const chat =
             chats.find(
-                item =>
-                    item.id
-                    ===
-                    chatId
+                c => c.id === id
             );
 
+        if (!chat) return;
 
         if (
-            !chat
-        ) {
-
-            return;
-        }
-
-
-        const confirmed =
-            confirm(
+            !confirm(
                 'Delete "'
                 +
                 chat.title
                 +
                 '"?'
-            );
-
-
-        if (
-            !confirmed
+            )
         ) {
-
             return;
         }
 
-
         chats =
             chats.filter(
-                item =>
-                    item.id
-                    !==
-                    chatId
+                c => c.id !== id
             );
-
 
         saveChats();
 
-
         if (
-            currentChatId
-            ===
-            chatId
+            currentChatId === id
         ) {
-
             showNewChatScreen();
-
         } else {
-
             renderHistory();
         }
     }
 
 
-
-    /* =====================================================
-       LOAD OLD CHAT
-    ===================================================== */
-
-    function loadSavedChat(
-        chatId
-    ) {
+    function loadSavedChat(id) {
 
         const chat =
             chats.find(
-                item =>
-                    item.id
-                    ===
-                    chatId
+                c => c.id === id
             );
 
+        if (!chat) return;
 
-        if (
-            !chat
-        ) {
-
-            return;
-        }
-
-
-        currentChatId =
-            chat.id;
-
+        currentChatId = id;
 
         chatTitle.innerText =
-            chat.title
-            ||
-            "AI Chat";
-
+            chat.title;
 
         chatMessages.innerHTML =
             "";
 
-
         chat.messages.forEach(
-            (
-                item,
-                index
-            ) => {
+            item => {
 
                 displayMessage(
                     item.text,
                     item.type,
-                    false,
-                    index
+                    false
                 );
             }
         );
-
 
         renderHistory();
     }
 
 
 
-    /* =====================================================
+    /* ==============================
        MESSAGE UI
-    ===================================================== */
+    ============================== */
 
     function displayMessage(
         text,
         type,
-        shouldSave = true,
-        storedIndex = null
+        shouldSave = true
     ) {
 
         const welcome =
-            chatMessages
-                .querySelector(
-                    ".new-chat-message"
-                );
+            chatMessages.querySelector(
+                ".new-chat-message"
+            );
 
-
-        if (
-            welcome
-        ) {
-
+        if (welcome) {
             welcome.remove();
         }
 
@@ -2298,7 +1430,6 @@
             document.createElement(
                 "div"
             );
-
 
         wrapper.className =
             "message-wrapper "
@@ -2312,13 +1443,12 @@
             );
 
 
-        const message =
+        const bubble =
             document.createElement(
                 "div"
             );
 
-
-        message.className =
+        bubble.className =
             "message "
             +
             (
@@ -2329,13 +1459,11 @@
                     "ai-message"
             );
 
-
-        message.innerText =
+        bubble.innerText =
             text;
 
-
         wrapper.appendChild(
-            message
+            bubble
         );
 
 
@@ -2348,85 +1476,59 @@
                     "div"
                 );
 
-
             actions.className =
                 "message-actions";
 
 
-            const copyButton =
+            const copy =
                 document.createElement(
                     "button"
                 );
 
-
-            copyButton.className =
+            copy.className =
                 "message-action";
 
-
-            copyButton.innerText =
+            copy.innerText =
                 "Copy";
 
+            copy.onclick =
+                async () => {
 
-            copyButton
-                .addEventListener(
-                    "click",
-                    async function () {
+                    await copyText(
+                        text
+                    );
 
-                        await copyText(
-                            text
-                        );
+                    copy.innerText =
+                        "Copied";
 
-
-                        copyButton.innerText =
-                            "Copied";
-
-
-                        setTimeout(
-                            () => {
-
-                                copyButton.innerText =
-                                    "Copy";
-
-                            },
-                            1200
-                        );
-                    }
-                );
+                    setTimeout(
+                        () =>
+                            copy.innerText =
+                                "Copy",
+                        1000
+                    );
+                };
 
 
-            const regenerateButton =
+            const regenerate =
                 document.createElement(
                     "button"
                 );
 
-
-            regenerateButton.className =
+            regenerate.className =
                 "message-action";
 
-
-            regenerateButton.innerText =
+            regenerate.innerText =
                 "Regenerate";
 
-
-            regenerateButton
-                .addEventListener(
-                    "click",
-                    function () {
-
-                        regenerateAnswer();
-                    }
-                );
+            regenerate.onclick =
+                regenerateAnswer;
 
 
-            actions.appendChild(
-                copyButton
+            actions.append(
+                copy,
+                regenerate
             );
-
-
-            actions.appendChild(
-                regenerateButton
-            );
-
 
             wrapper.appendChild(
                 actions
@@ -2434,23 +1536,17 @@
         }
 
 
-        chatMessages
-            .appendChild(
-                wrapper
-            );
+        chatMessages.appendChild(
+            wrapper
+        );
 
 
-        if (
-            shouldSave
-        ) {
+        if (shouldSave) {
 
             let chat =
                 getCurrentChat();
 
-
-            if (
-                !chat
-            ) {
+            if (!chat) {
 
                 chat =
                     createNewChat(
@@ -2462,16 +1558,10 @@
                     );
             }
 
-
             chat.messages.push({
-
-                text:
-                    text,
-
-                type:
-                    type
+                text,
+                type
             });
-
 
             saveChats();
 
@@ -2480,23 +1570,17 @@
 
 
         setTimeout(
-            () => {
-
+            () =>
                 wrapper
                     .scrollIntoView({
-
                         behavior:
                             "smooth",
-
                         block:
                             "end"
-                    });
-
-            },
+                    }),
             60
         );
     }
-
 
 
     function addMessage(
@@ -2513,78 +1597,9 @@
 
 
 
-    /* =====================================================
-       COPY ANSWER
-    ===================================================== */
-
-    async function copyText(
-        text
-    ) {
-
-        try {
-
-            if (
-                navigator.clipboard
-                &&
-                window.isSecureContext
-            ) {
-
-                await navigator
-                    .clipboard
-                    .writeText(
-                        text
-                    );
-
-                return;
-            }
-
-        } catch {}
-
-
-        const textarea =
-            document.createElement(
-                "textarea"
-            );
-
-
-        textarea.value =
-            text;
-
-
-        textarea.style.position =
-            "fixed";
-
-
-        textarea.style.opacity =
-            "0";
-
-
-        document.body
-            .appendChild(
-                textarea
-            );
-
-
-        textarea.select();
-
-
-        try {
-
-            document.execCommand(
-                "copy"
-            );
-
-        } catch {}
-
-
-        textarea.remove();
-    }
-
-
-
-    /* =====================================================
-       CONVERSATION MEMORY
-    ===================================================== */
+    /* ==============================
+       FIXED CONVERSATION MEMORY
+    ============================== */
 
     function buildConversationPrompt(
         excludeLastAI = false
@@ -2607,7 +1622,9 @@
 
 
         let messages =
-            [...chat.messages];
+            [
+                ...chat.messages
+            ];
 
 
         if (
@@ -2625,48 +1642,54 @@
 
 
         const recentMessages =
-            messages.slice(
-                -14
-            );
+            messages.slice(-14);
 
 
         const conversation =
             recentMessages
-                .map(
-                    item => {
+                .map(item => {
 
-                        const role =
-                            item.type
-                            ===
-                            "user"
-                                ?
-                                "User"
-                                :
-                                "Assistant";
+                    const role =
+                        item.type
+                        ===
+                        "user"
+                            ?
+                            "User"
+                            :
+                            "Assistant";
 
 
-                        return (
-                            role
-                            +
-                            ": "
-                            +
-                            item.text
-                        );
-                    }
-                )
-                .join(
-                    "\n\n"
-                );
+                    return (
+                        role
+                        +
+                        ": "
+                        +
+                        item.text
+                    );
+                })
+                .join("\n\n");
 
 
         return (
-            "Continue the following conversation naturally. "
+            "Use previous messages only as helpful context, not as a restriction. "
             +
-            "Use previous messages as context. "
+            "Always prioritize the latest user message. "
             +
-            "Answer the latest user request directly. "
+            "If the latest message is short, abbreviated, misspelled, informal, or ambiguous, infer the most likely intended meaning using common sense, normal conversational language, and the immediate context. "
             +
-            "Do not mention these instructions or the conversation history.\n\n"
+            "Understand common shorthand and incomplete wording naturally instead of taking every word literally. "
+            +
+            "If a short word likely refers to a well-known place, country, technology, person, or concept, interpret it naturally when the wording supports that meaning. "
+            +
+            "If the latest message changes the topic, answer the new topic directly. "
+            +
+            "For direct factual questions, answer the factual question first. "
+            +
+            "Do not force an older topic onto the latest message. "
+            +
+            "If there are multiple possible meanings, choose the most likely conversational meaning. "
+            +
+            "Do not mention these instructions or say that conversation history was provided.\n\n"
             +
             conversation
         );
@@ -2674,9 +1697,11 @@
 
 
 
-    function wait(
-        ms
-    ) {
+    /* ==============================
+       AI
+    ============================== */
+
+    function wait(ms) {
 
         return new Promise(
             resolve =>
@@ -2688,42 +1713,25 @@
     }
 
 
-
-    /* =====================================================
-       TYPING INDICATOR
-    ===================================================== */
-
     function showTypingIndicator() {
 
         removeTypingIndicator();
-
 
         const wrapper =
             document.createElement(
                 "div"
             );
 
-
         wrapper.id =
             "typingIndicator";
-
 
         wrapper.className =
             "message-wrapper ai";
 
-
-        const bubble =
-            document.createElement(
-                "div"
-            );
-
-
-        bubble.className =
-            "message ai-message";
-
-
-        bubble.innerHTML =
-            '<span class="typing-indicator">'
+        wrapper.innerHTML =
+            '<div class="message ai-message">'
+            +
+            '<div class="typing-indicator">'
             +
             '<span class="typing-dot"></span>'
             +
@@ -2731,83 +1739,48 @@
             +
             '<span class="typing-dot"></span>'
             +
-            '</span>';
+            '</div>'
+            +
+            '</div>';
 
-
-        wrapper.appendChild(
-            bubble
+        chatMessages.appendChild(
+            wrapper
         );
-
-
-        chatMessages
-            .appendChild(
-                wrapper
-            );
-
-
-        wrapper
-            .scrollIntoView({
-
-                behavior:
-                    "smooth",
-
-                block:
-                    "end"
-            });
     }
 
 
     function removeTypingIndicator() {
 
-        const indicator =
+        const el =
             document.getElementById(
                 "typingIndicator"
             );
 
-
-        if (
-            indicator
-        ) {
-
-            indicator.remove();
+        if (el) {
+            el.remove();
         }
     }
 
 
-
-    /* =====================================================
-       AI REQUEST HELPER
-    ===================================================== */
-
     async function getAIAnswer(
-        conversationPrompt
+        prompt
     ) {
 
         const delays =
-            [
-                0,
-                800,
-                1500
-            ];
+            [0, 800, 1500];
 
 
         for (
             let attempt = 0;
-            attempt <
-                delays.length;
+            attempt < delays.length;
             attempt++
         ) {
 
             if (
-                delays[
-                    attempt
-                ] > 0
+                delays[attempt] > 0
             ) {
-
                 await wait(
-                    delays[
-                        attempt
-                    ]
+                    delays[attempt]
                 );
             }
 
@@ -2822,7 +1795,6 @@
                     setTimeout(
                         () =>
                             controller.abort(),
-
                         12000
                     );
 
@@ -2845,7 +1817,7 @@
                                 JSON.stringify({
 
                                     question:
-                                        conversationPrompt
+                                        prompt
                                 }),
 
                             signal:
@@ -2873,9 +1845,7 @@
                 }
 
 
-            } catch (
-                error
-            ) {
+            } catch (error) {
 
                 console.log(
                     "AI retry:",
@@ -2886,42 +1856,27 @@
 
 
         throw new Error(
-            "AI request failed"
+            "AI unavailable"
         );
     }
 
 
-
-    /* =====================================================
-       NORMAL SEND
-    ===================================================== */
-
     async function askAI() {
 
-        const questionInput =
+        const input =
             document.getElementById(
                 "aiQuestion"
             );
 
-
-        const askButton =
+        const button =
             document.getElementById(
                 "askButton"
             );
 
-
         const question =
-            questionInput
-                .value
-                .trim();
+            input.value.trim();
 
-
-        if (
-            !question
-        ) {
-
-            return;
-        }
+        if (!question) return;
 
 
         addMessage(
@@ -2930,21 +1885,18 @@
         );
 
 
-        const conversationPrompt =
+        const prompt =
             buildConversationPrompt();
 
 
-        questionInput.value =
+        input.value =
             "";
 
-
-        askButton.disabled =
+        button.disabled =
             true;
 
-
-        askButton.innerText =
+        button.innerText =
             "Thinking...";
-
 
         showTypingIndicator();
 
@@ -2953,33 +1905,19 @@
 
             const answer =
                 await getAIAnswer(
-                    conversationPrompt
+                    prompt
                 );
 
-
             removeTypingIndicator();
-
-
-            /*
-               Small delay creates
-               a more natural feel.
-            */
-
-            await wait(
-                180
-            );
-
 
             addMessage(
                 answer,
                 "ai"
             );
 
-
         } catch {
 
             removeTypingIndicator();
-
 
             addMessage(
                 "AI is temporarily unavailable. Please try again.",
@@ -2988,51 +1926,29 @@
         }
 
 
-        askButton.disabled =
+        button.disabled =
             false;
 
-
-        askButton.innerText =
+        button.innerText =
             "Send";
     }
 
 
 
-    /* =====================================================
-       REGENERATE ANSWER
-    ===================================================== */
+    /* ==============================
+       REGENERATE
+    ============================== */
 
     async function regenerateAnswer() {
 
         const chat =
             getCurrentChat();
 
+        if (!chat) return;
+
 
         if (
-            !chat
-            ||
             chat.messages.length
-            ===
-            0
-        ) {
-
-            return;
-        }
-
-
-        const askButton =
-            document.getElementById(
-                "askButton"
-            );
-
-
-        /*
-           Remove last AI answer,
-           but keep user's last question.
-        */
-
-        if (
-            chat.messages.length > 0
             &&
             chat.messages[
                 chat.messages.length - 1
@@ -3041,9 +1957,7 @@
 
             chat.messages.pop();
 
-
             saveChats();
-
 
             loadSavedChat(
                 chat.id
@@ -3053,14 +1967,6 @@
 
         const prompt =
             buildConversationPrompt();
-
-
-        askButton.disabled =
-            true;
-
-
-        askButton.innerText =
-            "Thinking...";
 
 
         showTypingIndicator();
@@ -3073,244 +1979,189 @@
                     prompt
                 );
 
-
             removeTypingIndicator();
-
 
             addMessage(
                 answer,
                 "ai"
             );
 
-
         } catch {
 
             removeTypingIndicator();
-
 
             addMessage(
                 "AI is temporarily unavailable. Please try again.",
                 "ai"
             );
         }
-
-
-        askButton.disabled =
-            false;
-
-
-        askButton.innerText =
-            "Send";
     }
 
 
 
-    /* =====================================================
-       CALCULATOR RESULT → AI
-    ===================================================== */
+    /* ==============================
+       COPY
+    ============================== */
+
+    async function copyText(text) {
+
+        try {
+
+            await navigator
+                .clipboard
+                .writeText(
+                    text
+                );
+
+        } catch {}
+    }
+
+
+
+    /* ==============================
+       ASK AI ABOUT RESULT
+    ============================== */
 
     document
         .getElementById(
             "askResultButton"
         )
-        .addEventListener(
-            "click",
-            function () {
+        .onclick =
+        function () {
 
-                const input =
-                    document.getElementById(
-                        "aiQuestion"
-                    );
+            const input =
+                document.getElementById(
+                    "aiQuestion"
+                );
 
 
-                if (
+            if (
+                latestCalculatorResult
+            ) {
+
+                input.value =
+                    "Explain this calculation: "
+                    +
                     latestCalculatorResult
-                ) {
+                        .expression
+                    +
+                    " = "
+                    +
+                    latestCalculatorResult
+                        .result;
 
-                    input.value =
-                        "Explain this calculation: "
-                        +
-                        latestCalculatorResult
-                            .expression
-                        +
-                        " = "
-                        +
-                        latestCalculatorResult
-                            .result;
+            } else {
 
-                } else {
-
-                    const currentValue =
-                        display.value;
-
-
-                    if (
-                        currentValue
-                        &&
-                        currentValue
-                        !==
-                        "0"
-                    ) {
-
-                        input.value =
-                            "Explain this calculator result: "
-                            +
-                            currentValue;
-
-                    } else {
-
-                        input.value =
-                            "Help me with a calculation.";
-                    }
-                }
-
-
-                input.focus();
+                input.value =
+                    "Help me with a calculation.";
             }
-        );
+
+
+            input.focus();
+        };
 
 
 
-    /* =====================================================
-       EXPORT CURRENT CHAT
-    ===================================================== */
+    /* ==============================
+       EXPORT
+    ============================== */
 
     document
         .getElementById(
             "exportChat"
         )
-        .addEventListener(
-            "click",
-            function () {
+        .onclick =
+        function () {
 
-                const chat =
-                    getCurrentChat();
-
-
-                if (
-                    !chat
-                    ||
-                    chat.messages
-                        .length
-                    ===
-                    0
-                ) {
-
-                    alert(
-                        "There is no chat to export."
-                    );
-
-                    return;
-                }
+            const chat =
+                getCurrentChat();
 
 
-                const content =
-                    chat.messages
-                        .map(
-                            item => {
+            if (
+                !chat
+                ||
+                !chat.messages.length
+            ) {
 
-                                const role =
-                                    item.type
-                                    ===
-                                    "user"
-                                        ?
-                                        "You"
-                                        :
-                                        "AI";
-
-
-                                return (
-                                    role
-                                    +
-                                    ":\n"
-                                    +
-                                    item.text
-                                );
-                            }
-                        )
-                        .join(
-                            "\n\n"
-                        );
-
-
-                const blob =
-                    new Blob(
-                        [
-                            chat.title
-                            +
-                            "\n\n"
-                            +
-                            content
-                        ],
-                        {
-                            type:
-                                "text/plain"
-                        }
-                    );
-
-
-                const url =
-                    URL.createObjectURL(
-                        blob
-                    );
-
-
-                const link =
-                    document.createElement(
-                        "a"
-                    );
-
-
-                link.href =
-                    url;
-
-
-                link.download =
-                    (
-                        chat.title
-                        ||
-                        "chat"
-                    )
-                        .replace(
-                            /[^a-z0-9]+/gi,
-                            "-"
-                        )
-                    +
-                    ".txt";
-
-
-                document.body
-                    .appendChild(
-                        link
-                    );
-
-
-                link.click();
-
-
-                link.remove();
-
-
-                URL.revokeObjectURL(
-                    url
+                alert(
+                    "There is no chat to export."
                 );
+
+                return;
             }
-        );
+
+
+            const content =
+                chat.messages
+                    .map(item => {
+
+                        return (
+                            (
+                                item.type
+                                ===
+                                "user"
+                                    ?
+                                    "You"
+                                    :
+                                    "AI"
+                            )
+                            +
+                            ":\n"
+                            +
+                            item.text
+                        );
+                    })
+                    .join(
+                        "\n\n"
+                    );
+
+
+            const blob =
+                new Blob(
+                    [content],
+                    {
+                        type:
+                            "text/plain"
+                    }
+                );
+
+
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+
+
+            const a =
+                document.createElement(
+                    "a"
+                );
+
+
+            a.href = url;
+
+            a.download =
+                "chat.txt";
+
+            a.click();
+
+            URL.revokeObjectURL(
+                url
+            );
+        };
 
 
 
-    /* =====================================================
+    /* ==============================
        THEME
-    ===================================================== */
-
-    const savedTheme =
-        localStorage.getItem(
-            "calculatorTheme"
-        );
-
+    ============================== */
 
     if (
-        savedTheme === "light"
+        localStorage.getItem(
+            "calculatorTheme"
+        )
+        ===
+        "light"
     ) {
 
         document.body
@@ -3318,6 +2169,37 @@
             .add(
                 "light-mode"
             );
+    }
+
+
+    function toggleTheme() {
+
+        document.body
+            .classList
+            .toggle(
+                "light-mode"
+            );
+
+
+        const light =
+            document.body
+                .classList
+                .contains(
+                    "light-mode"
+                );
+
+
+        localStorage.setItem(
+            "calculatorTheme",
+            light
+                ?
+                "light"
+                :
+                "dark"
+        );
+
+
+        updateThemeButtons();
     }
 
 
@@ -3356,70 +2238,34 @@
     }
 
 
-    function toggleTheme() {
-
-        document.body
-            .classList
-            .toggle(
-                "light-mode"
-            );
-
-
-        const isLight =
-            document.body
-                .classList
-                .contains(
-                    "light-mode"
-                );
-
-
-        localStorage.setItem(
-            "calculatorTheme",
-            isLight
-                ?
-                "light"
-                :
-                "dark"
-        );
-
-
-        updateThemeButtons();
-    }
-
-
     document
         .getElementById(
             "desktopThemeButton"
         )
-        .addEventListener(
-            "click",
-            toggleTheme
-        );
+        .onclick =
+            toggleTheme;
 
 
     document
         .getElementById(
             "mobileThemeButton"
         )
-        .addEventListener(
-            "click",
-            toggleTheme
-        );
+        .onclick =
+            toggleTheme;
 
 
     updateThemeButtons();
 
 
 
-    /* =====================================================
+    /* ==============================
        MOBILE SIDEBAR
-    ===================================================== */
+    ============================== */
 
     const historyPanel =
         document.getElementById(
             "historyPanel"
         );
-
 
     const sidebarOverlay =
         document.getElementById(
@@ -3431,16 +2277,11 @@
 
         historyPanel
             .classList
-            .add(
-                "open"
-            );
-
+            .add("open");
 
         sidebarOverlay
             .classList
-            .add(
-                "show"
-            );
+            .add("show");
     }
 
 
@@ -3448,16 +2289,11 @@
 
         historyPanel
             .classList
-            .remove(
-                "open"
-            );
-
+            .remove("open");
 
         sidebarOverlay
             .classList
-            .remove(
-                "show"
-            );
+            .remove("show");
     }
 
 
@@ -3465,117 +2301,63 @@
         .getElementById(
             "openSidebar"
         )
-        .addEventListener(
-            "click",
-            openMobileSidebar
-        );
+        .onclick =
+            openMobileSidebar;
 
 
     document
         .getElementById(
             "closeSidebar"
         )
-        .addEventListener(
-            "click",
-            closeMobileSidebar
-        );
+        .onclick =
+            closeMobileSidebar;
 
 
-    sidebarOverlay
-        .addEventListener(
-            "click",
-            closeMobileSidebar
-        );
+    sidebarOverlay.onclick =
+        closeMobileSidebar;
 
 
 
-    /* =====================================================
-       NEW CHAT
-    ===================================================== */
+    /* ==============================
+       BUTTONS
+    ============================== */
 
     document
         .getElementById(
             "newChatButton"
         )
-        .addEventListener(
-            "click",
-            function () {
+        .onclick =
+        function () {
 
-                showNewChatScreen();
+            showNewChatScreen();
 
+            closeMobileSidebar();
+        };
 
-                closeMobileSidebar();
-
-
-                document
-                    .getElementById(
-                        "aiQuestion"
-                    )
-                    .focus();
-            }
-        );
-
-
-
-    /* =====================================================
-       CLEAR CURRENT CHAT
-    ===================================================== */
 
     document
         .getElementById(
             "clearChat"
         )
-        .addEventListener(
-            "click",
-            function () {
+        .onclick =
+        function () {
 
-                if (
-                    !currentChatId
-                ) {
-
-                    showNewChatScreen();
-
-                    return;
-                }
-
-
-                const confirmed =
-                    confirm(
-                        "Delete this entire chat?"
-                    );
-
-
-                if (
-                    !confirmed
-                ) {
-
-                    return;
-                }
-
+            if (
+                currentChatId
+            ) {
 
                 deleteChat(
                     currentChatId
                 );
             }
-        );
+        };
 
 
+    chatSearch.addEventListener(
+        "input",
+        renderHistory
+    );
 
-    /* =====================================================
-       SEARCH
-    ===================================================== */
-
-    chatSearch
-        .addEventListener(
-            "input",
-            renderHistory
-        );
-
-
-
-    /* =====================================================
-       ENTER TO SEND
-    ===================================================== */
 
     document
         .getElementById(
@@ -3583,9 +2365,7 @@
         )
         .addEventListener(
             "keydown",
-            function (
-                event
-            ) {
+            event => {
 
                 if (
                     event.key
@@ -3593,9 +2373,7 @@
                     "Enter"
                 ) {
 
-                    event
-                        .preventDefault();
-
+                    event.preventDefault();
 
                     askAI();
                 }
@@ -3604,147 +2382,109 @@
 
 
 
-    /* =====================================================
+    /* ==============================
        KEYBOARD CALCULATOR
-    ===================================================== */
+    ============================== */
 
-    document
-        .addEventListener(
-            "keydown",
-            function (
-                event
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.target.id
+                ===
+                "aiQuestion"
+                ||
+                event.target.id
+                ===
+                "chatSearch"
             ) {
 
-                if (
-                    event.target.id
-                    ===
-                    "aiQuestion"
-                    ||
-                    event.target.id
-                    ===
-                    "chatSearch"
-                ) {
-
-                    return;
-                }
-
-
-                if (
-                    event.key >= "0"
-                    &&
-                    event.key <= "9"
-                ) {
-
-                    addNumber(
-                        event.key
-                    );
-                }
-
-
-                else if (
-                    [
-                        "+",
-                        "-",
-                        "*",
-                        "/"
-                    ]
-                        .includes(
-                            event.key
-                        )
-                ) {
-
-                    addOperator(
-                        event.key
-                    );
-                }
-
-
-                else if (
-                    event.key
-                    ===
-                    "."
-                ) {
-
-                    addDecimal();
-                }
-
-
-                else if (
-                    event.key
-                    ===
-                    "Enter"
-                    ||
-                    event.key
-                    ===
-                    "="
-                ) {
-
-                    event
-                        .preventDefault();
-
-
-                    calculate();
-                }
-
-
-                else if (
-                    event.key
-                    ===
-                    "Backspace"
-                ) {
-
-                    expression =
-                        expression.slice(
-                            0,
-                            -1
-                        );
-
-
-                    latestCalculatorResult =
-                        null;
-
-
-                    updateDisplay();
-                }
-
-
-                else if (
-                    event.key
-                    ===
-                    "Escape"
-                ) {
-
-                    clearCalculator();
-                }
-
-
-                else if (
-                    event.key
-                    ===
-                    "%"
-                ) {
-
-                    percentage();
-                }
+                return;
             }
-        );
+
+
+            if (
+                event.key >= "0"
+                &&
+                event.key <= "9"
+            ) {
+
+                addNumber(
+                    event.key
+                );
+            }
+
+            else if (
+                [
+                    "+",
+                    "-",
+                    "*",
+                    "/"
+                ].includes(
+                    event.key
+                )
+            ) {
+
+                addOperator(
+                    event.key
+                );
+            }
+
+            else if (
+                event.key === "."
+            ) {
+
+                addDecimal();
+            }
+
+            else if (
+                event.key === "="
+                ||
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                calculate();
+            }
+
+            else if (
+                event.key === "Backspace"
+            ) {
+
+                expression =
+                    expression.slice(
+                        0,
+                        -1
+                    );
+
+                updateDisplay();
+            }
+
+            else if (
+                event.key === "Escape"
+            ) {
+
+                clearCalculator();
+            }
+
+            else if (
+                event.key === "%"
+            ) {
+
+                percentage();
+            }
+        }
+    );
 
 
 
-    /* =====================================================
-       START APP
-    ===================================================== */
+    /* ==============================
+       START
+    ============================== */
 
     renderHistory();
-
-
-    /*
-       Website reopen:
-       New Chat starts.
-
-       Old chats remain saved
-       in localStorage.
-    */
 
     showNewChatScreen();
 
