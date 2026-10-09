@@ -19,7 +19,7 @@ def ask_model(model_name, prompt):
         model=model_name,
         contents=prompt,
         config=types.GenerateContentConfig(
-            max_output_tokens=120,
+            max_output_tokens=250,
             temperature=0.2
         )
     )
@@ -34,34 +34,53 @@ def home():
 def ask_ai():
     try:
         data = request.get_json() or {}
-        question = data.get("question", "").strip()
+
+        question = data.get(
+            "question",
+            ""
+        ).strip()
 
         if not question:
             return jsonify({
                 "error": "Please enter a question."
             }), 400
 
-        if len(question) > 700:
+        # Increased because conversation memory
+        # sends previous messages too.
+        if len(question) > 12000:
             return jsonify({
-                "error": "Please keep the question shorter."
+                "error": "Conversation is too long. Please start a new chat."
             }), 400
 
         prompt = (
-            "Answer accurately and briefly. "
+            "Answer the user's latest message naturally and accurately. "
+            "Use earlier conversation only as helpful context. "
+            "Always prioritize the latest user message. "
+            "Understand normal abbreviations, spelling mistakes, shorthand, "
+            "and informal conversational wording using common sense. "
+            "If the latest question changes the topic, follow the new topic. "
             "For maths, give the final answer first. "
-            "Use no more than 2 short sentences.\n"
-            f"Question: {question}"
+            "Keep normal answers concise unless more explanation is needed.\n\n"
+            f"{question}"
         )
 
-        # Fast model first
         try:
-            response = ask_model(PRIMARY_MODEL, prompt)
+            response = ask_model(
+                PRIMARY_MODEL,
+                prompt
+            )
 
         except Exception as primary_error:
-            print("PRIMARY MODEL ERROR:", repr(primary_error))
 
-            # Backup immediately
-            response = ask_model(BACKUP_MODEL, prompt)
+            print(
+                "PRIMARY MODEL ERROR:",
+                repr(primary_error)
+            )
+
+            response = ask_model(
+                BACKUP_MODEL,
+                prompt
+            )
 
         if not response.text:
             return jsonify({
@@ -69,14 +88,20 @@ def ask_ai():
             }), 500
 
         return jsonify({
-            "answer": response.text.strip()
+            "answer":
+                response.text.strip()
         })
 
     except Exception as error:
-        print("FINAL GEMINI ERROR:", repr(error))
+
+        print(
+            "FINAL GEMINI ERROR:",
+            repr(error)
+        )
 
         return jsonify({
-            "error": "AI is temporarily unavailable. Please try again."
+            "error":
+                "AI is temporarily unavailable. Please try again."
         }), 503
 
 
