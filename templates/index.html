@@ -25,6 +25,14 @@
             overflow-x: hidden;
         }
 
+        .mobile-topbar {
+            display: none;
+        }
+
+        .sidebar-overlay {
+            display: none;
+        }
+
         .app-layout {
             width: 100%;
             max-width: 1300px;
@@ -44,10 +52,29 @@
             min-height: 560px;
         }
 
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
         .history-title {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 12px;
+        }
+
+        #closeSidebar {
+            display: none;
+            border: none;
+            background: #333;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
         }
 
         #newChatButton {
@@ -180,9 +207,22 @@
             margin-bottom: 15px;
         }
 
+        .chat-title-wrap {
+            min-width: 0;
+        }
+
         .chat-title {
             font-size: 20px;
             font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .memory-status {
+            color: #888;
+            font-size: 12px;
+            margin-top: 3px;
         }
 
         #clearChat {
@@ -296,8 +336,39 @@
         /* MOBILE */
 
         @media (max-width: 800px) {
+
             body {
                 padding: 10px;
+            }
+
+            .mobile-topbar {
+                width: 100%;
+                max-width: 430px;
+                margin: 0 auto 12px auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            #openSidebar {
+                border: none;
+                background: #1c1c1c;
+                color: white;
+                width: 46px;
+                height: 46px;
+                border-radius: 12px;
+                font-size: 22px;
+                cursor: pointer;
+            }
+
+            .mobile-title {
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .mobile-spacer {
+                width: 46px;
             }
 
             .app-layout {
@@ -312,17 +383,47 @@
 
             .chat-panel {
                 order: 2;
-                min-height: 420px;
+                min-height: 430px;
             }
 
             .history-panel {
-                order: 3;
-                min-height: auto;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: min(320px, 86vw);
+                height: 100%;
+                min-height: 100%;
+                z-index: 1001;
+                border-radius: 0 22px 22px 0;
+                overflow-y: auto;
+                transform: translateX(-105%);
+                transition: transform 0.25s ease;
             }
 
-            #chatHistory {
-                max-height: 180px;
-                overflow-y: auto;
+            .history-panel.open {
+                transform: translateX(0);
+            }
+
+            #closeSidebar {
+                display: block;
+            }
+
+            .sidebar-overlay {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.55);
+                z-index: 1000;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transition: opacity 0.25s ease;
+            }
+
+            .sidebar-overlay.show {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
             }
 
             #display {
@@ -344,13 +445,13 @@
         }
 
         @media (max-width: 420px) {
+
             body {
                 padding: 8px;
             }
 
             .calculator,
-            .chat-panel,
-            .history-panel {
+            .chat-panel {
                 border-radius: 20px;
                 padding: 13px;
             }
@@ -405,13 +506,48 @@
 
 <body>
 
+<!-- MOBILE TOP BAR -->
+
+<div class="mobile-topbar">
+
+    <button id="openSidebar">
+        ☰
+    </button>
+
+    <div class="mobile-title">
+        AI Calculator
+    </div>
+
+    <div class="mobile-spacer"></div>
+
+</div>
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+></div>
+
+
 <div class="app-layout">
 
     <!-- CHAT HISTORY -->
 
-    <div class="history-panel">
+    <div
+        class="history-panel"
+        id="historyPanel"
+    >
 
-        <div class="history-title">Chat History</div>
+        <div class="history-header">
+
+            <div class="history-title">
+                Chat History
+            </div>
+
+            <button id="closeSidebar">
+                ✕
+            </button>
+
+        </div>
 
         <button id="newChatButton">
             + New Chat
@@ -421,11 +557,17 @@
 
     </div>
 
+
     <!-- CALCULATOR -->
 
     <div class="calculator">
 
-        <input type="text" id="display" readonly value="0">
+        <input
+            type="text"
+            id="display"
+            readonly
+            value="0"
+        >
 
         <div class="buttons">
 
@@ -457,19 +599,40 @@
 
     </div>
 
+
     <!-- AI CHAT -->
 
     <div class="chat-panel">
 
         <div class="chat-header">
-            <div class="chat-title" id="chatTitle">New Chat</div>
-            <button id="clearChat">Clear Chat</button>
+
+            <div class="chat-title-wrap">
+
+                <div
+                    class="chat-title"
+                    id="chatTitle"
+                >
+                    New Chat
+                </div>
+
+                <div class="memory-status">
+                    Conversation memory on
+                </div>
+
+            </div>
+
+            <button id="clearChat">
+                Clear Chat
+            </button>
+
         </div>
 
         <div id="chatMessages">
+
             <div class="new-chat-message">
                 Start a new chat
             </div>
+
         </div>
 
         <div class="chat-input-row">
@@ -480,7 +643,10 @@
                 placeholder="Ask anything..."
             >
 
-            <button id="askButton" onclick="askAI()">
+            <button
+                id="askButton"
+                onclick="askAI()"
+            >
                 Send
             </button>
 
@@ -490,16 +656,22 @@
 
 </div>
 
+
 <script>
 
-    /* CALCULATOR */
+    /* =========================
+       CALCULATOR
+    ========================= */
 
     let expression = "";
     let justCalculated = false;
 
-    const display = document.getElementById("display");
+    const display =
+        document.getElementById("display");
+
 
     function updateDisplay() {
+
         if (expression === "") {
             display.value = "0";
             return;
@@ -510,183 +682,366 @@
             .replace(/\//g, "÷");
     }
 
+
     function addNumber(number) {
+
         if (justCalculated) {
             expression = "";
             justCalculated = false;
         }
 
         expression += number;
+
         updateDisplay();
     }
 
+
     function addOperator(operator) {
+
         if (expression === "") {
+
             if (operator === "-") {
+
                 expression = "-";
+
                 updateDisplay();
             }
+
             return;
         }
 
+
         justCalculated = false;
 
-        const lastCharacter = expression.slice(-1);
 
-        if ("+-*/".includes(lastCharacter)) {
-            expression = expression.slice(0, -1) + operator;
+        const lastCharacter =
+            expression.slice(-1);
+
+
+        if (
+            "+-*/".includes(
+                lastCharacter
+            )
+        ) {
+
+            expression =
+                expression.slice(0, -1)
+                +
+                operator;
+
         } else {
+
             expression += operator;
         }
 
+
         updateDisplay();
     }
 
+
     function addDecimal() {
+
         if (justCalculated) {
+
             expression = "";
+
             justCalculated = false;
         }
 
-        const currentPart = expression.split(/[+\-*/]/).pop();
 
-        if (currentPart.includes(".")) {
+        const currentPart =
+            expression
+                .split(/[+\-*/]/)
+                .pop();
+
+
+        if (
+            currentPart.includes(".")
+        ) {
             return;
         }
 
+
         if (
-            expression === "" ||
-            "+-*/".includes(expression.slice(-1))
+            expression === ""
+            ||
+            "+-*/".includes(
+                expression.slice(-1)
+            )
         ) {
+
             expression += "0.";
+
         } else {
+
             expression += ".";
         }
 
+
         updateDisplay();
     }
 
+
     function clearCalculator() {
+
         expression = "";
+
         justCalculated = false;
+
         display.value = "0";
     }
 
-    function toggleSign() {
-        if (expression === "") return;
 
-        const match = expression.match(/(-?\d*\.?\d+)$/);
+    function toggleSign() {
+
+        if (
+            expression === ""
+        ) return;
+
+
+        const match =
+            expression.match(
+                /(-?\d*\.?\d+)$/
+            );
+
 
         if (!match) return;
 
-        const number = match[0];
-        const start = expression.length - number.length;
 
-        if (number.startsWith("-")) {
+        const number =
+            match[0];
+
+
+        const start =
+            expression.length
+            -
+            number.length;
+
+
+        if (
+            number.startsWith("-")
+        ) {
+
             expression =
-                expression.slice(0, start) +
+                expression.slice(
+                    0,
+                    start
+                )
+                +
                 number.slice(1);
+
         } else {
+
             expression =
-                expression.slice(0, start) +
-                "-" +
+                expression.slice(
+                    0,
+                    start
+                )
+                +
+                "-"
+                +
                 number;
         }
+
 
         updateDisplay();
     }
 
-    function percentage() {
-        if (expression === "") return;
 
-        const match = expression.match(/(-?\d*\.?\d+)$/);
+    function percentage() {
+
+        if (
+            expression === ""
+        ) return;
+
+
+        const match =
+            expression.match(
+                /(-?\d*\.?\d+)$/
+            );
+
 
         if (!match) return;
 
-        const number = parseFloat(match[0]);
 
-        if (isNaN(number)) return;
+        const number =
+            parseFloat(
+                match[0]
+            );
+
+
+        if (
+            isNaN(number)
+        ) return;
+
 
         expression =
             expression.slice(
                 0,
-                expression.length - match[0].length
-            ) + (number / 100);
+                expression.length
+                -
+                match[0].length
+            )
+            +
+            (
+                number / 100
+            );
+
 
         updateDisplay();
     }
 
+
     function calculate() {
-        if (expression === "") return;
 
-        const lastCharacter = expression.slice(-1);
+        if (
+            expression === ""
+        ) return;
 
-        if ("+-*/".includes(lastCharacter)) {
+
+        const lastCharacter =
+            expression.slice(-1);
+
+
+        if (
+            "+-*/".includes(
+                lastCharacter
+            )
+        ) {
             return;
         }
 
+
         try {
-            if (!/^[0-9+\-*/. ]+$/.test(expression)) {
+
+            if (
+                !/^[0-9+\-*/. ]+$/
+                    .test(expression)
+            ) {
+
                 throw new Error();
             }
 
-            let result = Function(
-                '"use strict"; return (' +
-                expression +
-                ')'
-            )();
 
-            if (!Number.isFinite(result)) {
-                display.value = "Cannot divide by zero";
+            let result =
+                Function(
+                    '"use strict"; return ('
+                    +
+                    expression
+                    +
+                    ')'
+                )();
+
+
+            if (
+                !Number.isFinite(
+                    result
+                )
+            ) {
+
+                display.value =
+                    "Cannot divide by zero";
+
                 expression = "";
+
                 return;
             }
 
+
             result =
                 Math.round(
-                    (result + Number.EPSILON) *
+                    (
+                        result
+                        +
+                        Number.EPSILON
+                    )
+                    *
                     10000000000
-                ) / 10000000000;
+                )
+                /
+                10000000000;
 
-            expression = result.toString();
-            display.value = expression;
-            justCalculated = true;
+
+            expression =
+                result.toString();
+
+
+            display.value =
+                expression;
+
+
+            justCalculated =
+                true;
+
 
         } catch {
-            display.value = "Error";
-            expression = "";
-            justCalculated = false;
+
+            display.value =
+                "Error";
+
+
+            expression =
+                "";
+
+
+            justCalculated =
+                false;
         }
     }
 
 
-    /* CHAT HISTORY */
+
+    /* =========================
+       CHAT HISTORY
+    ========================= */
+
 
     const chatMessages =
-        document.getElementById("chatMessages");
+        document.getElementById(
+            "chatMessages"
+        );
+
 
     const chatHistory =
-        document.getElementById("chatHistory");
+        document.getElementById(
+            "chatHistory"
+        );
+
 
     const chatTitle =
-        document.getElementById("chatTitle");
+        document.getElementById(
+            "chatTitle"
+        );
+
 
     let currentChatId = null;
 
-    let chats = JSON.parse(
-        localStorage.getItem("calculatorChats") || "[]"
-    );
+
+    let chats =
+        JSON.parse(
+            localStorage.getItem(
+                "calculatorChats"
+            )
+            ||
+            "[]"
+        );
 
 
     function generateChatId() {
+
         return (
-            Date.now().toString() +
-            Math.random().toString(16).slice(2)
+            Date.now()
+                .toString()
+            +
+            Math.random()
+                .toString(16)
+                .slice(2)
         );
     }
 
 
     function saveChats() {
+
         localStorage.setItem(
             "calculatorChats",
             JSON.stringify(chats)
@@ -694,35 +1049,58 @@
     }
 
 
-    function createNewChat(firstMessage) {
+    function createNewChat(
+        firstMessage
+    ) {
 
         const chat = {
-            id: generateChatId(),
+
+            id:
+                generateChatId(),
 
             title:
                 firstMessage.length > 32
-                    ? firstMessage.slice(0, 32) + "..."
-                    : firstMessage,
+                    ?
+                    firstMessage.slice(
+                        0,
+                        32
+                    )
+                    +
+                    "..."
+                    :
+                    firstMessage,
 
             messages: [],
 
-            createdAt: new Date().toISOString()
+            createdAt:
+                new Date()
+                    .toISOString()
         };
+
 
         chats.unshift(chat);
 
-        currentChatId = chat.id;
+
+        currentChatId =
+            chat.id;
+
 
         saveChats();
+
         renderHistory();
+
 
         return chat;
     }
 
 
     function getCurrentChat() {
+
         return chats.find(
-            chat => chat.id === currentChatId
+            chat =>
+                chat.id
+                ===
+                currentChatId
         );
     }
 
@@ -731,12 +1109,21 @@
 
         currentChatId = null;
 
-        chatTitle.innerText = "New Chat";
+
+        chatTitle.innerText =
+            "New Chat";
+
 
         chatMessages.innerHTML =
             '<div class="new-chat-message">Start a new chat</div>';
 
-        document.getElementById("aiQuestion").value = "";
+
+        document
+            .getElementById(
+                "aiQuestion"
+            )
+            .value = "";
+
 
         renderHistory();
     }
@@ -746,70 +1133,132 @@
 
         chatHistory.innerHTML = "";
 
-        if (chats.length === 0) {
+
+        if (
+            chats.length === 0
+        ) {
 
             const empty =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
-            empty.className = "empty-history";
-            empty.innerText = "No saved chats yet.";
 
-            chatHistory.appendChild(empty);
+            empty.className =
+                "empty-history";
+
+
+            empty.innerText =
+                "No saved chats yet.";
+
+
+            chatHistory
+                .appendChild(
+                    empty
+                );
+
 
             return;
         }
 
 
-        chats.forEach(chat => {
+        chats.forEach(
+            chat => {
 
-            const button =
-                document.createElement("button");
+                const button =
+                    document.createElement(
+                        "button"
+                    );
 
-            button.className = "history-item";
 
-            if (chat.id === currentChatId) {
-                button.classList.add("active");
-            }
+                button.className =
+                    "history-item";
 
-            button.innerText =
-                chat.title || "Untitled Chat";
 
-            button.addEventListener(
-                "click",
-                function () {
-                    loadSavedChat(chat.id);
+                if (
+                    chat.id
+                    ===
+                    currentChatId
+                ) {
+
+                    button
+                        .classList
+                        .add(
+                            "active"
+                        );
                 }
-            );
 
-            chatHistory.appendChild(button);
-        });
+
+                button.innerText =
+                    chat.title
+                    ||
+                    "Untitled Chat";
+
+
+                button
+                    .addEventListener(
+                        "click",
+                        function () {
+
+                            loadSavedChat(
+                                chat.id
+                            );
+
+                            closeMobileSidebar();
+                        }
+                    );
+
+
+                chatHistory
+                    .appendChild(
+                        button
+                    );
+            }
+        );
     }
 
 
-    function loadSavedChat(chatId) {
+    function loadSavedChat(
+        chatId
+    ) {
 
         const chat =
             chats.find(
-                item => item.id === chatId
+                item =>
+                    item.id
+                    ===
+                    chatId
             );
+
 
         if (!chat) return;
 
-        currentChatId = chat.id;
+
+        currentChatId =
+            chat.id;
+
 
         chatTitle.innerText =
-            chat.title || "AI Chat";
+            chat.title
+            ||
+            "AI Chat";
 
-        chatMessages.innerHTML = "";
 
-        chat.messages.forEach(item => {
+        chatMessages.innerHTML =
+            "";
 
-            displayMessage(
-                item.text,
-                item.type,
-                false
-            );
-        });
+
+        chat.messages.forEach(
+            item => {
+
+                displayMessage(
+                    item.text,
+                    item.type,
+                    false
+                );
+            }
+        );
+
 
         renderHistory();
     }
@@ -822,65 +1271,105 @@
     ) {
 
         const welcome =
-            chatMessages.querySelector(
-                ".new-chat-message"
-            );
+            chatMessages
+                .querySelector(
+                    ".new-chat-message"
+                );
+
 
         if (welcome) {
+
             welcome.remove();
         }
 
-        const message =
-            document.createElement("div");
 
-        message.className =
-            "message " +
-            (
-                type === "user"
-                    ? "user-message"
-                    : "ai-message"
+        const message =
+            document.createElement(
+                "div"
             );
 
-        message.innerText = text;
 
-        chatMessages.appendChild(message);
+        message.className =
+            "message "
+            +
+            (
+                type === "user"
+                    ?
+                    "user-message"
+                    :
+                    "ai-message"
+            );
 
 
-        if (shouldSave) {
+        message.innerText =
+            text;
 
-            let chat = getCurrentChat();
+
+        chatMessages
+            .appendChild(
+                message
+            );
+
+
+        if (
+            shouldSave
+        ) {
+
+            let chat =
+                getCurrentChat();
+
 
             if (!chat) {
 
-                chat = createNewChat(
-                    type === "user"
-                        ? text
-                        : "New Chat"
-                );
+                chat =
+                    createNewChat(
+                        type === "user"
+                            ?
+                            text
+                            :
+                            "New Chat"
+                    );
             }
 
+
             chat.messages.push({
+
                 text: text,
+
                 type: type
             });
 
+
             saveChats();
+
             renderHistory();
         }
 
 
-        setTimeout(() => {
+        setTimeout(
+            () => {
 
-            message.scrollIntoView({
-                behavior: "smooth",
-                block: "end"
-            });
+                message
+                    .scrollIntoView({
 
-        }, 100);
+                        behavior:
+                            "smooth",
+
+                        block:
+                            "end"
+                    });
+
+            },
+            100
+        );
     }
 
 
-    function addMessage(text, type) {
+    function addMessage(
+        text,
+        type
+    ) {
+
         displayMessage(
             text,
             type,
@@ -889,38 +1378,155 @@
     }
 
 
-    function wait(ms) {
-        return new Promise(
-            resolve =>
-                setTimeout(resolve, ms)
+
+    /* =========================
+       CONVERSATION MEMORY
+    ========================= */
+
+
+    function buildConversationPrompt() {
+
+        const chat =
+            getCurrentChat();
+
+
+        if (
+            !chat
+            ||
+            chat.messages.length === 0
+        ) {
+
+            return "";
+        }
+
+
+        /*
+           Last 12 messages are sent
+           so AI understands the
+           current conversation.
+
+           Old chats are NOT mixed.
+        */
+
+        const recentMessages =
+            chat.messages.slice(-12);
+
+
+        const conversation =
+            recentMessages
+                .map(
+                    item => {
+
+                        const role =
+                            item.type === "user"
+                                ?
+                                "User"
+                                :
+                                "Assistant";
+
+
+                        return (
+                            role
+                            +
+                            ": "
+                            +
+                            item.text
+                        );
+                    }
+                )
+                .join("\n\n");
+
+
+        return (
+            "Continue the conversation below naturally. "
+            +
+            "Use the previous messages as context. "
+            +
+            "Answer the latest user message directly. "
+            +
+            "Do not mention that conversation history was provided.\n\n"
+            +
+            conversation
         );
     }
 
 
-    /* AI REQUEST */
+
+    function wait(ms) {
+
+        return new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    ms
+                )
+        );
+    }
+
+
+
+    /* =========================
+       AI REQUEST
+    ========================= */
+
 
     async function askAI() {
 
         const questionInput =
-            document.getElementById("aiQuestion");
+            document.getElementById(
+                "aiQuestion"
+            );
+
 
         const askButton =
-            document.getElementById("askButton");
+            document.getElementById(
+                "askButton"
+            );
+
 
         const question =
-            questionInput.value.trim();
+            questionInput
+                .value
+                .trim();
+
 
         if (!question) return;
 
 
-        addMessage(question, "user");
+        /*
+           First save user's message.
+           Then build context including
+           the latest message.
+        */
 
-        questionInput.value = "";
+        addMessage(
+            question,
+            "user"
+        );
 
-        askButton.disabled = true;
-        askButton.innerText = "Thinking...";
 
-        const delays = [0, 800, 1500];
+        const conversationPrompt =
+            buildConversationPrompt();
+
+
+        questionInput.value =
+            "";
+
+
+        askButton.disabled =
+            true;
+
+
+        askButton.innerText =
+            "Thinking...";
+
+
+        const delays =
+            [
+                0,
+                800,
+                1500
+            ];
 
 
         for (
@@ -929,40 +1535,60 @@
             attempt++
         ) {
 
-            if (delays[attempt] > 0) {
-                await wait(delays[attempt]);
+            if (
+                delays[attempt] > 0
+            ) {
+
+                await wait(
+                    delays[attempt]
+                );
             }
+
 
             try {
 
                 const controller =
                     new AbortController();
 
+
                 const timeout =
                     setTimeout(
-                        () => controller.abort(),
-                        8000
+                        () =>
+                            controller.abort(),
+                        10000
                     );
 
+
                 const response =
-                    await fetch("/ask-ai", {
+                    await fetch(
+                        "/ask-ai",
+                        {
 
-                        method: "POST",
+                            method:
+                                "POST",
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+                            headers: {
 
-                        body: JSON.stringify({
-                            question: question
-                        }),
+                                "Content-Type":
+                                    "application/json"
+                            },
 
-                        signal: controller.signal
-                    });
+                            body:
+                                JSON.stringify({
+
+                                    question:
+                                        conversationPrompt
+                                }),
+
+                            signal:
+                                controller.signal
+                        }
+                    );
 
 
-                clearTimeout(timeout);
+                clearTimeout(
+                    timeout
+                );
 
 
                 const data =
@@ -970,7 +1596,8 @@
 
 
                 if (
-                    response.ok &&
+                    response.ok
+                    &&
                     data.answer
                 ) {
 
@@ -979,11 +1606,18 @@
                         "ai"
                     );
 
-                    askButton.disabled = false;
-                    askButton.innerText = "Send";
+
+                    askButton.disabled =
+                        false;
+
+
+                    askButton.innerText =
+                        "Send";
+
 
                     return;
                 }
+
 
             } catch (error) {
 
@@ -1000,65 +1634,178 @@
             "ai"
         );
 
-        askButton.disabled = false;
-        askButton.innerText = "Send";
+
+        askButton.disabled =
+            false;
+
+
+        askButton.innerText =
+            "Send";
     }
 
 
-    /* NEW CHAT */
+
+    /* =========================
+       MOBILE SIDEBAR
+    ========================= */
+
+
+    const historyPanel =
+        document.getElementById(
+            "historyPanel"
+        );
+
+
+    const sidebarOverlay =
+        document.getElementById(
+            "sidebarOverlay"
+        );
+
+
+    function openMobileSidebar() {
+
+        historyPanel
+            .classList
+            .add("open");
+
+
+        sidebarOverlay
+            .classList
+            .add("show");
+    }
+
+
+    function closeMobileSidebar() {
+
+        historyPanel
+            .classList
+            .remove("open");
+
+
+        sidebarOverlay
+            .classList
+            .remove("show");
+    }
+
 
     document
-        .getElementById("newChatButton")
+        .getElementById(
+            "openSidebar"
+        )
+        .addEventListener(
+            "click",
+            openMobileSidebar
+        );
+
+
+    document
+        .getElementById(
+            "closeSidebar"
+        )
+        .addEventListener(
+            "click",
+            closeMobileSidebar
+        );
+
+
+    sidebarOverlay
+        .addEventListener(
+            "click",
+            closeMobileSidebar
+        );
+
+
+
+    /* =========================
+       NEW CHAT
+    ========================= */
+
+
+    document
+        .getElementById(
+            "newChatButton"
+        )
         .addEventListener(
             "click",
             function () {
 
                 showNewChatScreen();
 
+                closeMobileSidebar();
+
+
                 document
-                    .getElementById("aiQuestion")
+                    .getElementById(
+                        "aiQuestion"
+                    )
                     .focus();
             }
         );
 
 
-    /* CLEAR CURRENT CHAT */
+
+    /* =========================
+       CLEAR CHAT
+    ========================= */
+
 
     document
-        .getElementById("clearChat")
+        .getElementById(
+            "clearChat"
+        )
         .addEventListener(
             "click",
             function () {
 
-                if (!currentChatId) {
+                if (
+                    !currentChatId
+                ) {
 
                     showNewChatScreen();
+
                     return;
                 }
 
-                chats = chats.filter(
-                    chat =>
-                        chat.id !== currentChatId
-                );
+
+                chats =
+                    chats.filter(
+                        chat =>
+                            chat.id
+                            !==
+                            currentChatId
+                    );
+
 
                 saveChats();
+
 
                 showNewChatScreen();
             }
         );
 
 
-    /* ENTER SEND */
+
+    /* =========================
+       ENTER SEND
+    ========================= */
+
 
     document
-        .getElementById("aiQuestion")
+        .getElementById(
+            "aiQuestion"
+        )
         .addEventListener(
             "keydown",
             function (event) {
 
-                if (event.key === "Enter") {
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
 
-                    event.preventDefault();
+                    event
+                        .preventDefault();
+
 
                     askAI();
                 }
@@ -1066,84 +1813,129 @@
         );
 
 
-    /* KEYBOARD CALCULATOR */
 
-    document.addEventListener(
-        "keydown",
-        function (event) {
+    /* =========================
+       KEYBOARD CALCULATOR
+    ========================= */
 
-            if (
-                event.target.id === "aiQuestion"
-            ) {
-                return;
+
+    document
+        .addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.target.id
+                    ===
+                    "aiQuestion"
+                ) {
+
+                    return;
+                }
+
+
+                if (
+                    event.key >= "0"
+                    &&
+                    event.key <= "9"
+                ) {
+
+                    addNumber(
+                        event.key
+                    );
+                }
+
+
+                else if (
+                    [
+                        "+",
+                        "-",
+                        "*",
+                        "/"
+                    ]
+                    .includes(
+                        event.key
+                    )
+                ) {
+
+                    addOperator(
+                        event.key
+                    );
+                }
+
+
+                else if (
+                    event.key === "."
+                ) {
+
+                    addDecimal();
+                }
+
+
+                else if (
+                    event.key === "Enter"
+                    ||
+                    event.key === "="
+                ) {
+
+                    event
+                        .preventDefault();
+
+
+                    calculate();
+                }
+
+
+                else if (
+                    event.key ===
+                    "Backspace"
+                ) {
+
+                    expression =
+                        expression.slice(
+                            0,
+                            -1
+                        );
+
+
+                    updateDisplay();
+                }
+
+
+                else if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    clearCalculator();
+                }
+
+
+                else if (
+                    event.key === "%"
+                ) {
+
+                    percentage();
+                }
             }
+        );
 
 
-            if (
-                event.key >= "0" &&
-                event.key <= "9"
-            ) {
 
-                addNumber(event.key);
-            }
+    /* =========================
+       APP START
+    ========================= */
 
-            else if (
-                ["+", "-", "*", "/"]
-                    .includes(event.key)
-            ) {
-
-                addOperator(event.key);
-            }
-
-            else if (event.key === ".") {
-
-                addDecimal();
-            }
-
-            else if (
-                event.key === "Enter" ||
-                event.key === "="
-            ) {
-
-                event.preventDefault();
-                calculate();
-            }
-
-            else if (
-                event.key === "Backspace"
-            ) {
-
-                expression =
-                    expression.slice(0, -1);
-
-                updateDisplay();
-            }
-
-            else if (
-                event.key === "Escape"
-            ) {
-
-                clearCalculator();
-            }
-
-            else if (
-                event.key === "%"
-            ) {
-
-                percentage();
-            }
-        }
-    );
-
-
-    /* APP START */
 
     renderHistory();
 
-    /* IMPORTANT:
-       Website dobara open ho
-       to hamesha fresh New Chat aaye.
-       Purani chats history mein save rahengi.
+
+    /*
+       Every reload:
+       fresh New Chat opens.
+
+       Old conversations remain
+       saved in browser history.
     */
 
     showNewChatScreen();
